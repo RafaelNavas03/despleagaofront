@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, message, Form, Input, Select, InputNumber, Drawer, Tag, Tooltip, Popover } from 'antd';
+import { Table, Button, Modal, message, Form, Input, Select, InputNumber, Drawer, Tag, Tooltip, Popover,Popconfirm } from 'antd';
 import { Row, Col } from 'react-bootstrap';
-import { EditFilled, EyeOutlined } from '@ant-design/icons';
+import { EditFilled, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import CrearComponenteForm from './CrearComponente';
 
 const { Item } = Form;
@@ -14,6 +14,28 @@ const EditarComponenteForm = () => {
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const [opencom, setOpencom] = useState(false);
 
+  const eliminarcomp = async (rec) => {
+    try {
+      message.success(rec.id_componente);
+      const formDataObject = new FormData();
+      formDataObject.append('id_componente', rec.id_componente);  // Agregar id_componente al cuerpo de la solicitud
+      const response = await fetch('http://127.0.0.1:8000/producto/eliminarcomponente/', {
+        method: 'POST',
+        body: formDataObject,
+      });
+      const data = await response.json();
+
+      if (response.ok) {
+        message.success('Artículo eliminado con éxito');
+        fetchComponentes();
+      } else {
+        message.error(data.error);
+      }
+    } catch (error) {
+      message.error('Ocurrió un error al eliminar el artículo');
+    }
+  };
+
   const showDrawercom = () => {
     setOpencom(true);
   };
@@ -22,27 +44,28 @@ const EditarComponenteForm = () => {
     setOpencom(false);
     fetchComponentes();
   };
+  const fetchComponentes = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/producto/listarcomponentes/');
+      if (response.ok) {
+        const data = await response.json();
+        const componentesWithDefaultCosto = data.componentes.map((componente) => ({
+          ...componente,
+          costo: componente.costo !== null ? componente.costo : '0.00',
+        }));
+        setComponentes(componentesWithDefaultCosto);
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.error);
+      }
+    } catch (error) {
+      console.error('Error al cargar los componentes:', error);
+      message.error('Hubo un error al cargar los componentes');
+    }
+  };
 
   useEffect(() => {
-    const fetchComponentes = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:8000/producto/listarcomponentes/');
-        if (response.ok) {
-          const data = await response.json();
-          const componentesWithDefaultCosto = data.componentes.map((componente) => ({
-            ...componente,
-            costo: componente.costo !== null ? componente.costo : '0.00',
-          }));
-          setComponentes(componentesWithDefaultCosto);
-        } else {
-          const errorData = await response.json();
-          message.error(errorData.error);
-        }
-      } catch (error) {
-        console.error('Error al cargar los componentes:', error);
-        message.error('Hubo un error al cargar los componentes');
-      }
-    };
+    
 
     const fetchUnidadesMedida = async () => {
       try {
@@ -110,7 +133,7 @@ const EditarComponenteForm = () => {
       key: 'acciones',
       render: (_, record) => (
         <Row>
-          <Col md={5}>
+          <Col md={3}>
             <Tooltip title='Editar producto'>
               <Button
                 icon={<EditFilled />}
@@ -119,7 +142,23 @@ const EditarComponenteForm = () => {
               </Button>
             </Tooltip>
           </Col >
-          <Col md={5}>
+          <Col md={3}>
+            <Tooltip title='Eliminar producto'>
+              <Popconfirm
+                title="Eliminar artículo"
+                description="¿Seguro que desea eliminar este artículo?"
+                onConfirm={() => eliminarcomp(record)}
+                okText="Yes"
+                cancelText="No"
+              >
+                <Button
+                  icon={<DeleteOutlined />}
+                >
+                </Button>
+              </Popconfirm>
+            </Tooltip>
+          </Col >
+          <Col md={3}>
             <Tooltip
               title='Ver componente'
               overlayStyle={{ width: 300 }}
@@ -128,7 +167,7 @@ const EditarComponenteForm = () => {
                 <Popover title={<Tag color="#000000">Ensamble de componente:</Tag>} trigger="click"
                   content={
                     <div>
-                      
+
                       <p>Generado por ensamble: {record.detalle.padrecant}</p>
                       <hr />
                       {record.detalle.detalle.map((detalleItem, index) => (
@@ -194,6 +233,8 @@ const EditarComponenteForm = () => {
       message.error('Ocurrió un error al editar el componente');
     }
   };
+
+
 
 
   return (
