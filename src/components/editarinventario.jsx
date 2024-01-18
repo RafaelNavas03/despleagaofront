@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { notification, Segmented, Table, Tag, Tooltip, Avatar, Button, Row, Col, Drawer, Divider, Pagination, Input, Form } from 'antd';
 import { EditOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons';
-import imgmesas from './res/imgmesas.png';
+import imginventario from './res/imginventario.png';
 import CrearInventario from './crearinventario';
 
 const Inventario = () => {
@@ -250,7 +250,7 @@ const Inventario = () => {
                                 label: (
                                     <Tooltip title="Inventario">
                                         <div style={{ padding: 4 }}>
-                                            <Avatar shape="square" src={imgmesas} size="large" />
+                                            <Avatar shape="square" src={imginventario} size="large" />
                                         </div>
                                     </Tooltip>
                                 ),

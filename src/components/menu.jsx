@@ -10,6 +10,7 @@ import imgmesas from './res/imgmesas.png';
 import imgcombos from './res/imgcombos.png';
 import imgrecompensa from './res/imgrecompensa.png';
 import imgbodegas from './res/imgbodegas.png';
+import imginventario from './res/imginventario.png';
 import Empresa from './Empresa';
 import Empleados from './empleados.jsx';
 import Sucursales from './sucursales.jsx';
@@ -290,7 +291,7 @@ const MenuG = () => {
                                         cover={
                                             <Image
                                                 alt="Inventario"
-                                                src={proveedor}
+                                                src={imginventario}
                                                 style={{ padding: '5%', height: '150px', width: 'auto' }}
                                                 preview={false}
                                             />}
