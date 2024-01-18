@@ -158,8 +158,9 @@ const CrearComponenteForm = () => {
       <Item
         label="Costo"
         name="costo"
+        values={0}
         rules={[
-          { required: false },
+          { required: true },
           { type: 'number', message: 'Por favor, ingrese un valor numérico válido para el costo' },
         ]}
       >

@@ -314,7 +314,7 @@ const EditarComponenteForm = () => {
               <Input.TextArea />
             </Item>
 
-            <Item label="Costo" name="costo" initialValue={editComponente.costo} rules={[{ required: false }, { type: 'decimal', message: 'Por favor, ingrese un valor numérico válido para el costo' }]}>
+            <Item label="Costo" name="costo" initialValue={editComponente.costo} rules={[{ required: true }, { type: 'decimal', message: 'Por favor, ingrese un valor numérico válido para el costo' }]} min={0} default={0}>
               <InputNumber
                 step={0.01}
               />
