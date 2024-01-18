@@ -121,7 +121,7 @@ const Inventario = () => {
         if (!editModalVisible) {
             cargarInventario(currentPage);
         }
-      }, [inventario]);
+      }, []);
     
 
     const columns = [
