@@ -106,13 +106,19 @@ const CrearComponenteForm = () => {
 
       const data = await response.json();
       if (response.ok) {
-        message.success('Se creó el componente con exito');
+        notification.success({
+          message: 'Éxito',
+          description: 'Se creó el componente con exito',
+        });
         form.resetFields();
       } else {
         message.error('Algo salió mal' + error);
       }
     } catch (error) {
-      message.error('Algo salió mal' + error);
+      notification.success({
+        message: 'Error',
+        description: 'Algo salió mal' + error,
+      });
     }
   };
 

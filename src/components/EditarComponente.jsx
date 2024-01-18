@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, message, Form, Input, Select, InputNumber, Drawer, Tag, Tooltip, Popover,Popconfirm } from 'antd';
+import { Table, Button, Modal, message, Form, Input, Select, InputNumber, Drawer, Tag, Tooltip, Popover, Popconfirm } from 'antd';
 import { Row, Col } from 'react-bootstrap';
 import { EditFilled, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import CrearComponenteForm from './CrearComponente';
@@ -13,12 +13,26 @@ const EditarComponenteForm = () => {
   const [editComponente, setEditComponente] = useState({});
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const [opencom, setOpencom] = useState(false);
-
+  const [categorias, setCategorias] = useState([]);
+  const fetchCategorias = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/producto/listar_categorias/');
+      if (response.ok) {
+        const data = await response.json();
+        setCategorias(data.categorias);
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.error);
+      }
+    } catch (error) {
+      console.error('Error al cargar las categorías:', error);
+      message.error('Hubo un error al cargar las categorías');
+    }
+  };
   const eliminarcomp = async (rec) => {
     try {
-      message.success(rec.id_componente);
       const formDataObject = new FormData();
-      formDataObject.append('id_componente', rec.id_componente);  // Agregar id_componente al cuerpo de la solicitud
+      formDataObject.append('id_componente', rec.id_componente);
       const response = await fetch('http://127.0.0.1:8000/producto/eliminarcomponente/', {
         method: 'POST',
         body: formDataObject,
@@ -26,10 +40,16 @@ const EditarComponenteForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        message.success('Artículo eliminado con éxito');
+        notification.success({
+          message: 'Éxito',
+          description: 'Artículo eliminado con éxito',
+        });
         fetchComponentes();
       } else {
-        message.error(data.error);
+        notification.error({
+          message: 'Error',
+          description: 'Algo salío mal',
+        });
       }
     } catch (error) {
       message.error('Ocurrió un error al eliminar el artículo');
@@ -65,7 +85,7 @@ const EditarComponenteForm = () => {
   };
 
   useEffect(() => {
-    
+
 
     const fetchUnidadesMedida = async () => {
       try {
@@ -84,6 +104,7 @@ const EditarComponenteForm = () => {
     };
 
     fetchComponentes();
+    fetchCategorias();
     fetchUnidadesMedida();
   }, []);
 
@@ -134,7 +155,7 @@ const EditarComponenteForm = () => {
       render: (_, record) => (
         <Row>
           <Col md={3}>
-            <Tooltip title='Editar producto'>
+            <Tooltip title='Editar artículo'>
               <Button
                 icon={<EditFilled />}
                 onClick={() => handleEdit(record)}
@@ -195,24 +216,30 @@ const EditarComponenteForm = () => {
   ];
 
   const handleEdit = (record) => {
-    setEditComponente(record);
+    console.log('xDDDDDDDDDDDD');
+    setEditComponente({
+      nombre: record.nombre,
+      descripcion: record.descripcion,
+      costo: record.costo,
+      tipo: record.tipo,
+      id_um: record.id_um,
+      id_categoria: record.id_categoria.id_categoria,
+    });
+    console.log(record.id_categoria.id_categoria);
     setModalVisible(true);
   };
 
   const handleModalOk = async (values) => {
     try {
+      const formDataObject = new FormData();
+      formDataObject.append('nombre', values.nombre);
+      formDataObject.append('descripcion', values.description);
+      formDataObject.append('tipo', values.tipo);
+      formDataObject.append('costo', values.costo);
+      formDataObject.append('categoria', values.id_categoria);
       const response = await fetch(`http://127.0.0.1:8000/producto/editarcomponente/${editComponente.id_componente}/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nombre: values.nombre,
-          descripcion: values.descripcion,
-          costo: values.costo,
-          tipo: values.tipo,
-          id_um: values.id_um,
-        }),
+        body: formDataObject,
       });
 
       const data = await response.json();
@@ -278,6 +305,15 @@ const EditarComponenteForm = () => {
               parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
             />
           </Item>
+          <Form.Item name="id_categoria" label="Categoría" rules={[{ required: true }]}>
+            <Select placeholder="Seleccione una categoría">
+              {categorias.map((categoria) => (
+                <Option key={categoria.id_categoria} value={editComponente.id_categoria}>
+                  {categoria.catnombre}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
 
           <Item label="Tipo" name="tipo" rules={[{ required: true, message: 'Por favor, seleccione el tipo del componente' }]}>
             <Select>

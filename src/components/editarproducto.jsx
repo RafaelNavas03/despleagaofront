@@ -203,9 +203,10 @@ const EditarProducto = () => {
 
     const onClosep = () => {
         setOpenp(false);
+        fetchproducto(currentPage);
     };
 
-    const fetchData = async (page) => {
+    const fetchproducto = async (page) => {
         try {
             const response = await fetch(`http://127.0.0.1:8000/producto/listar/?page=${page}`);
             const data = await response.json();
@@ -219,10 +220,8 @@ const EditarProducto = () => {
 
     useEffect(() => {
         form.resetFields();
-        if (!editModalVisible) {
-            fetchData(currentPage);
-        }
-    }, [productos]);
+        fetchproducto(currentPage);
+    }, []);
 
     useEffect(() => {
         const fetchUmList = async () => {
@@ -247,7 +246,6 @@ const EditarProducto = () => {
 
         fetchUmList();
         fetchCategoriaList();
-        fetchData(currentPage);
     }, [currentPage]);
 
     const handlePageChange = (page) => {
@@ -263,7 +261,6 @@ const EditarProducto = () => {
     };
 
     const handleCancelEdit = () => {
-        fetchData(currentPage);
         setEditingProductId(null);
         setInitialFormValues(null);
         setEditModalVisible(false);
@@ -319,7 +316,6 @@ const EditarProducto = () => {
                 setEditingProductId(null);
                 setInitialFormValues(null);
                 setEditModalVisible(false);
-                fetchData(currentPage);
             } else {
                 console.error('Error updating product:', response.status, response.statusText);
                 const responseData = await response.json();
