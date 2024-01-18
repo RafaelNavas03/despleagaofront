@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, message, Form, Input, Select, InputNumber, Drawer, Tag, Tooltip, Popover, Popconfirm } from 'antd';
+import { Table, Button, Modal, message, Form, Input, Select, InputNumber, Drawer, Tag, Tooltip, Popover, Popconfirm, notification } from 'antd';
 import { Row, Col } from 'react-bootstrap';
 import { EditFilled, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import CrearComponenteForm from './CrearComponente';
@@ -10,10 +10,12 @@ const { Option } = Select;
 const EditarComponenteForm = () => {
   const [componentes, setComponentes] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [editComponente, setEditComponente] = useState({});
+  const [editComponente, setEditComponente] = useState(null);
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const [opencom, setOpencom] = useState(false);
   const [categorias, setCategorias] = useState([]);
+  const [form] = Form.useForm();
+
   const fetchCategorias = async () => {
     try {
       const response = await fetch('http://127.0.0.1:8000/producto/listar_categorias/');
@@ -33,6 +35,7 @@ const EditarComponenteForm = () => {
     try {
       const formDataObject = new FormData();
       formDataObject.append('id_componente', rec.id_componente);
+      console.log(rec.id_componente);
       const response = await fetch('http://127.0.0.1:8000/producto/eliminarcomponente/', {
         method: 'POST',
         body: formDataObject,
@@ -48,11 +51,11 @@ const EditarComponenteForm = () => {
       } else {
         notification.error({
           message: 'Error',
-          description: 'Algo salío mal',
+          description: 'Algo salío mal: '+data.error,
         });
       }
     } catch (error) {
-      message.error('Ocurrió un error al eliminar el artículo');
+      message.error('Ocurrió un error al eliminar el artículo' + error);
     }
   };
 
@@ -62,18 +65,17 @@ const EditarComponenteForm = () => {
 
   const onClosecom = () => {
     setOpencom(false);
+    form.resetFields();
+    setEditComponente(null);
     fetchComponentes();
   };
+  
   const fetchComponentes = async () => {
     try {
       const response = await fetch('http://127.0.0.1:8000/producto/listarcomponentes/');
       if (response.ok) {
         const data = await response.json();
-        const componentesWithDefaultCosto = data.componentes.map((componente) => ({
-          ...componente,
-          costo: componente.costo !== null ? componente.costo : '0.00',
-        }));
-        setComponentes(componentesWithDefaultCosto);
+        setComponentes(data.componentes);
       } else {
         const errorData = await response.json();
         message.error(errorData.error);
@@ -214,18 +216,17 @@ const EditarComponenteForm = () => {
       ),
     },
   ];
+  const handleEditPrev = async (record) => {
+    form.resetFields();
+    setEditComponente(
+      null
+    );
+    handleEdit(record);
+    setModalVisible(true);
+  };
 
   const handleEdit = (record) => {
-    console.log('xDDDDDDDDDDDD');
-    setEditComponente({
-      nombre: record.nombre,
-      descripcion: record.descripcion,
-      costo: record.costo,
-      tipo: record.tipo,
-      id_um: record.id_um,
-      id_categoria: record.id_categoria.id_categoria,
-    });
-    console.log(record.id_categoria.id_categoria);
+    setEditComponente(record);
     setModalVisible(true);
   };
 
@@ -235,15 +236,14 @@ const EditarComponenteForm = () => {
       formDataObject.append('nombre', values.nombre);
       formDataObject.append('descripcion', values.description);
       formDataObject.append('tipo', values.tipo);
-      formDataObject.append('costo', values.costo);
+      formDataObject.append('costo', values.costo.replace('$', '').replace(',', '.'));
       formDataObject.append('categoria', values.id_categoria);
+      formDataObject.append('id_um', values.id_um);
       const response = await fetch(`http://127.0.0.1:8000/producto/editarcomponente/${editComponente.id_componente}/`, {
         method: 'POST',
         body: formDataObject,
       });
-
       const data = await response.json();
-
       if (response.ok) {
         message.success(data.mensaje);
         setComponentes((prevComponentes) =>
@@ -252,6 +252,7 @@ const EditarComponenteForm = () => {
           )
         );
         setModalVisible(false);
+        fetchComponentes();
       } else {
         message.error(data.error);
       }
@@ -260,7 +261,18 @@ const EditarComponenteForm = () => {
       message.error('Ocurrió un error al editar el componente');
     }
   };
-
+  useEffect(() => {
+    if (modalVisible && editComponente) {
+      form.setFieldsValue({
+        nombre: editComponente.nombre,
+        descripcion: editComponente.descripcion,
+        costo: editComponente.costo,
+        id_categoria: editComponente.id_categoria.id_categoria,
+        tipo: editComponente.tipo,
+        id_um: editComponente.id_um.id_um,
+      });
+    }
+  }, [modalVisible, editComponente, form]);
 
 
 
@@ -277,68 +289,72 @@ const EditarComponenteForm = () => {
       <div className="table-responsive">
         <Table dataSource={componentes} columns={columns} />
       </div>
-
-      <Modal
+      {editComponente && (
+        <Modal
         title="Editar Componente"
         visible={modalVisible}
-        onCancel={() => setModalVisible(false)}
+        onCancel={() => {
+          setModalVisible(false);
+          form.resetFields();
+          setEditComponente(null);
+        }}
         footer={null}
       >
-        <Form
-          initialValues={editComponente}
-          onFinish={handleModalOk}
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-        >
-          <Item label="Nombre" name="nombre" rules={[{ required: true, message: 'Por favor, ingrese el nombre del componente' }]}>
-            <Input />
-          </Item>
+          <Form
+            form={form}
+            onFinish={handleModalOk}
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+          >
+            <Item label="Nombre" name="nombre" values={editComponente.nombre} rules={[{ required: true, message: 'Por favor, ingrese el nombre del componente' }]}>
+              <Input />
+            </Item>
 
-          <Item label="Descripción" name="descripcion" rules={[{ required: true, message: 'Por favor, ingrese la descripción del componente' }]}>
-            <Input.TextArea />
-          </Item>
+            <Item label="Descripción" name="descripcion" initialValue={editComponente.descripcion}>
+              <Input.TextArea />
+            </Item>
 
-          <Item label="Costo" name="costo" rules={[{ required: false }, { type: 'number', message: 'Por favor, ingrese un valor numérico válido para el costo' }]}>
-            <InputNumber
-              step={0.01}
-              formatter={(value) => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              parser={(value) => value.replace(/\$\s?|(,*)/g, '')}
-            />
-          </Item>
-          <Form.Item name="id_categoria" label="Categoría" rules={[{ required: true }]}>
-            <Select placeholder="Seleccione una categoría">
-              {categorias.map((categoria) => (
-                <Option key={categoria.id_categoria} value={editComponente.id_categoria}>
-                  {categoria.catnombre}
-                </Option>
-              ))}
-            </Select>
-          </Form.Item>
+            <Item label="Costo" name="costo" initialValue={editComponente.costo} rules={[{ required: false }, { type: 'decimal', message: 'Por favor, ingrese un valor numérico válido para el costo' }]}>
+              <InputNumber
+                step={0.01}
+              />
+            </Item>
+            <Form.Item name="id_categoria" label="Categoría" rules={[{ required: true }]} initialValue={editComponente.id_categoria.id_categoria}>
+              <Select placeholder="Seleccione una categoría">
+                {categorias.map((categoria) => (
+                  <Option key={categoria.id_categoria} value={categoria.id_categoria}>
+                    {categoria.catnombre}
+                  </Option>
+                ))}
+              </Select>
+            </Form.Item>
 
-          <Item label="Tipo" name="tipo" rules={[{ required: true, message: 'Por favor, seleccione el tipo del componente' }]}>
-            <Select>
-              <Option value="N">Normal</Option>
-              <Option value="F">Fabricado</Option>
-            </Select>
-          </Item>
+            <Item label="Tipo" name="tipo" initialValue={editComponente.tipo} rules={[{ required: true, message: 'Por favor, seleccione el tipo del componente' }]}>
+              <Select>
+                <Option value="N">Normal</Option>
+                <Option value="F">Fabricado</Option>
+              </Select>
+            </Item>
 
-          <Item label="Unidad de Medida" name="id_um" rules={[{ required: true, message: 'Por favor, seleccione la unidad de medida' }]}>
-            <Select>
-              {unidadesMedida.map((um) => (
-                <Option key={um.id_um} value={um.id_um}>
-                  {um.nombre_um}
-                </Option>
-              ))}
-            </Select>
-          </Item>
+            <Item label="Unidad de Medida" name="id_um" initialValue={editComponente.id_um} rules={[{ required: true, message: 'Por favor, seleccione la unidad de medida' }]}>
+              <Select>
+                {unidadesMedida.map((um) => (
+                  <Option key={um.id_um} value={um.id_um}>
+                    {um.nombre_um}
+                  </Option>
+                ))}
+              </Select>
+            </Item>
 
-          <Item wrapperCol={{ offset: 8, span: 16 }}>
-            <Button type="primary" htmlType="submit">
-              Guardar Cambios
-            </Button>
-          </Item>
-        </Form>
-      </Modal>
+            <Item wrapperCol={{ offset: 8, span: 16 }}>
+              <Button type="primary" htmlType="submit">
+                Guardar Cambios
+              </Button>
+            </Item>
+          </Form>
+        </Modal>
+      )}
+
       <Drawer
         title="Crear artículo"
         width={720}

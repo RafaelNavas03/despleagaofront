@@ -115,7 +115,7 @@ const CrearComponenteForm = () => {
         message.error('Algo salió mal' + error);
       }
     } catch (error) {
-      notification.success({
+      notification.error({
         message: 'Error',
         description: 'Algo salió mal' + error,
       });
