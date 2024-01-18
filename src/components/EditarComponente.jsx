@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Modal, message, Form, Input, Select, InputNumber,Drawer,Tag } from 'antd';
+import { Table, Button, Modal, message, Form, Input, Select, InputNumber, Drawer, Tag, Tooltip, Popover } from 'antd';
 import { Row, Col } from 'react-bootstrap';
-import { EditOutlined } from '@ant-design/icons';
+import { EditFilled, EyeOutlined } from '@ant-design/icons';
 import CrearComponenteForm from './CrearComponente';
 
 const { Item } = Form;
@@ -109,9 +109,48 @@ const EditarComponenteForm = () => {
       dataIndex: 'acciones',
       key: 'acciones',
       render: (_, record) => (
-        <Button type="link" onClick={() => handleEdit(record)}>
-          Editar
-        </Button>
+        <Row>
+          <Col md={5}>
+            <Tooltip title='Editar producto'>
+              <Button
+                icon={<EditFilled />}
+                onClick={() => handleEdit(record)}
+              >
+              </Button>
+            </Tooltip>
+          </Col >
+          <Col md={5}>
+            <Tooltip
+              title='Ver componente'
+              overlayStyle={{ width: 300 }}
+            >
+              {record.detalle && (
+                <Popover title={<Tag color="#000000">Ensamble de componente:</Tag>} trigger="click"
+                  content={
+                    <div>
+                      
+                      <p>Generado por ensamble: {record.detalle.padrecant}</p>
+                      <hr />
+                      {record.detalle.detalle.map((detalleItem, index) => (
+                        <div key={index}>
+                          <Tag color="#55971A">{detalleItem.id_componentehijo.nombre}</Tag>
+                          <p>Cantidad: {detalleItem.cantidadhijo}</p>
+                          <p>Unidad de Medida: {detalleItem.um.nombre}</p>
+                          <hr />
+                        </div>
+                      ))}
+                    </div>
+                  }>
+                  <Button
+                    icon={<EyeOutlined />}
+                  >
+                  </Button>
+                </Popover>
+              )}
+
+            </Tooltip>
+          </Col >
+        </Row>
       ),
     },
   ];
@@ -167,7 +206,9 @@ const EditarComponenteForm = () => {
         </Col>
       </Row>
 
-      <Table dataSource={componentes} columns={columns} />
+      <div className="table-responsive">
+        <Table dataSource={componentes} columns={columns} />
+      </div>
 
       <Modal
         title="Editar Componente"
@@ -232,7 +273,7 @@ const EditarComponenteForm = () => {
           },
         }}
       >
-        <CrearComponenteForm/>
+        <CrearComponenteForm />
       </Drawer>
     </div>
   );
