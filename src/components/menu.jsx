@@ -21,6 +21,7 @@ import Bodegas from './bodegas.jsx';
 import Mesas from './editarmesa.jsx';
 import EditarBodegaForm from './editarbodega.jsx';
 import Proveedores from './proveedores.jsx';
+import Inventario from './editarinventario.jsx';
 
 const MenuG = () => {
     const { Meta } = Card;
@@ -33,7 +34,9 @@ const MenuG = () => {
     const tooltipTitle7 = 'Agrega y gestiona las rescompensas de los productos';
     const tooltipTitle8 = 'Agrega y gestiona tus sucursales';
     const tooltipTitle9 = 'Agrega y gestiona las bodegas';
-    const tooltipTitle10 = 'Agrega y edita proveedores';
+    const tooltipTitle10 = 'Agrega y gestiona tus proveedores';
+    const tooltipTitle11 = 'Agrega y gestiona tus inventarios';
+
 
     const [currentPage, setCurrentPage] = useState('home');
 
@@ -278,6 +281,27 @@ const MenuG = () => {
                                 </Tooltip>
                             </Badge.Ribbon>
                         </Col>
+                        <Col xs={24} sm={12} md={5} lg={3}>
+                            <Badge.Ribbon text="Inventario" color="#7C1818">
+                                <Tooltip title={tooltipTitle11}>
+                                    <Card
+                                        hoverable
+                                        style={cardStyle}
+                                        cover={
+                                            <Image
+                                                alt="Inventario"
+                                                src={proveedor}
+                                                style={{ padding: '5%', height: '150px', width: 'auto' }}
+                                                preview={false}
+                                            />}
+                                        className="text-center"
+                                        onClick={() => handleCardClick('inventario')}
+                                    >
+                                        <Meta title={tooltipTitle11}></Meta>
+                                    </Card>
+                                </Tooltip>
+                            </Badge.Ribbon>
+                        </Col>
                     </>
                 )}
                 {currentPage === 'empresa' && (
@@ -368,6 +392,16 @@ const MenuG = () => {
                         <Row>
                             <Col md={12}>
                                 <Proveedores />
+                            </Col>
+                        </Row>
+
+                    </>)}
+                {currentPage == 'inventario' && (
+                    <>
+                        <Divider>Inventario</Divider>
+                        <Row>
+                            <Col md={12}>
+                                <Inventario />
                             </Col>
                         </Row>
 
