@@ -9,15 +9,18 @@ import imgaviso from './res/imgaviso.png';
 import imgmesas from './res/imgmesas.png';
 import imgcombos from './res/imgcombos.png';
 import imgrecompensa from './res/imgrecompensa.png';
+import imgbodegas from './res/imgbodegas.png';
 import Empresa from './Empresa';
 import Empleados from './empleados.jsx';
 import Sucursales from './sucursales.jsx';
 import subsidiario from './res/subsidiario.png'
 import EditarProducto from './editarproducto.jsx';
+import proveedor from './res/proveedor.png';
 import Combos from './combo.jsx';
 import Bodegas from './bodegas.jsx';
 import Mesas from './editarmesa.jsx';
 import EditarBodegaForm from './editarbodega.jsx';
+import Proveedores from './proveedores.jsx';
 
 const MenuG = () => {
     const { Meta } = Card;
@@ -30,6 +33,8 @@ const MenuG = () => {
     const tooltipTitle7 = 'Agrega y gestiona las rescompensas de los productos';
     const tooltipTitle8 = 'Agrega y gestiona tus sucursales';
     const tooltipTitle9 = 'Agrega y gestiona las bodegas';
+    const tooltipTitle10 = 'Agrega y edita proveedores';
+
     const [currentPage, setCurrentPage] = useState('home');
 
     const handleCardClick = (page) => {
@@ -240,7 +245,7 @@ const MenuG = () => {
                                         cover={
                                             <Image
                                                 alt="Bodegas"
-                                                src={subsidiario}
+                                                src={imgbodegas}
                                                 style={{ padding: '5%', height: '150px', width: 'auto' }}
                                                 preview={false}
                                             />}
@@ -248,6 +253,27 @@ const MenuG = () => {
                                         onClick={() => handleCardClick('bodegas')}
                                     >
                                         <Meta title={tooltipTitle9}></Meta>
+                                    </Card>
+                                </Tooltip>
+                            </Badge.Ribbon>
+                        </Col>
+                        <Col xs={24} sm={12} md={5} lg={3}>
+                            <Badge.Ribbon text="Proveedores" color="#7C1818">
+                                <Tooltip title={tooltipTitle10}>
+                                    <Card
+                                        hoverable
+                                        style={cardStyle}
+                                        cover={
+                                            <Image
+                                                alt="Proveedores"
+                                                src={proveedor}
+                                                style={{ padding: '5%', height: '150px', width: 'auto' }}
+                                                preview={false}
+                                            />}
+                                        className="text-center"
+                                        onClick={() => handleCardClick('proveedores')}
+                                    >
+                                        <Meta title={tooltipTitle10}></Meta>
                                     </Card>
                                 </Tooltip>
                             </Badge.Ribbon>
@@ -332,6 +358,16 @@ const MenuG = () => {
                         <Row>
                             <Col md={12}>
                                 <EditarBodegaForm />
+                            </Col>
+                        </Row>
+
+                    </>)}
+                {currentPage == 'proveedores' && (
+                    <>
+                        <Divider>Proveedores</Divider>
+                        <Row>
+                            <Col md={12}>
+                                <Proveedores />
                             </Col>
                         </Row>
 
