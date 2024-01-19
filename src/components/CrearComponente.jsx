@@ -156,7 +156,7 @@ const CrearComponenteForm = () => {
         </Select>
       </Form.Item>
       <Item
-        label="Costo"
+        label="Costo de producción"
         name="costo"
         values={0}
         rules={[

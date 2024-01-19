@@ -18,6 +18,7 @@ const EditarComponenteForm = () => {
   const [form] = Form.useForm();
   const [agregarDetalle, setagregarDetalle] = useState(false);
   const [detallecomponente, setdetallecomponente] = useState(false);
+  const [detalleeditar, setdetalleeditar] = useState(null);
 
   const handleTipoChange = (value) => {
     setagregarDetalle(value === 'F');
@@ -92,6 +93,7 @@ const EditarComponenteForm = () => {
       message.error('Hubo un error al cargar los componentes');
     }
   };
+
 
   useEffect(() => {
 
@@ -196,8 +198,7 @@ const EditarComponenteForm = () => {
               {record.detalle && (
                 <Popover title={<Tag color="#000000">Ensamble de componente:</Tag>} trigger="click"
                   content={
-                    <div>
-
+                    <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
                       <p>Generado por ensamble: {record.detalle.padrecant}</p>
                       <hr />
                       {record.detalle.detalle.map((detalleItem, index) => (
@@ -210,10 +211,7 @@ const EditarComponenteForm = () => {
                       ))}
                     </div>
                   }>
-                  <Button
-                    icon={<EyeOutlined />}
-                  >
-                  </Button>
+                  <Button icon={<EyeOutlined />} />
                 </Popover>
               )}
 
@@ -223,19 +221,16 @@ const EditarComponenteForm = () => {
       ),
     },
   ];
-  const handleEditPrev = async (record) => {
-    form.resetFields();
-    setEditComponente(
-      null
-    );
-    handleEdit(record);
-    setModalVisible(true);
-  };
 
   const handleEdit = (record) => {
     setEditComponente(record);
+    setdetalleeditar(record.detalle);
     handleTipoChange(record.tipo);
+    form.resetFields();
     setModalVisible(true);
+    console.log(record.detalle);
+
+
   };
 
   const handleModalOk = async (values) => {
@@ -329,7 +324,7 @@ const EditarComponenteForm = () => {
               <Input.TextArea />
             </Item>
 
-            <Item label="Costo" name="costo" initialValue={editComponente.costo} rules={[{ required: true }, { type: 'decimal', message: 'Por favor, ingrese un valor numérico válido para el costo' }]} min={0} default={0}>
+            <Item label="Costo de producción" name="costo" values={editComponente.costo} rules={[{ required: true }, { type: 'decimal', message: 'Por favor, ingrese un valor numérico válido para el costo' }]} min={0} default={0}>
               <InputNumber
                 step={0.01}
               />
@@ -361,37 +356,40 @@ const EditarComponenteForm = () => {
               </Select>
             </Item>
 
+
+            {
+              agregarDetalle && (
+
+                <Row>
+                  <label>Cantidad generada a partir del ensamble</label>
+                  <Col md={12}>
+                    <Item
+                      label=':'
+                      name="cantidad"
+                      initialValue={(detalleeditar && detalleeditar.padrecant)}
+                      rules={[
+                        { required: false },
+                        { type: 'number', message: 'Por favor, ingrese un valor numérico válido para la cantidad' },
+                      ]}
+                    >
+                      <InputNumber
+                        step={0.01}
+                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                        min={0}
+                      />
+                    </Item>
+                    <h6>Selecciona los artículos que ensamblan tu artículo</h6>
+                    <div style={{ border: '1px solid #A4A4A4', padding: '2%', margin: '5%' }}>
+                      <TransferContainer onValor={savedetalle} detalle={detalleeditar} />
+                    </div>
+                  </Col>
+                </Row>
+              )}
             <Item wrapperCol={{ offset: 8, span: 16 }}>
               <Button type="primary" htmlType="submit">
                 Guardar Cambios
               </Button>
             </Item>
-            {agregarDetalle && (
-
-              <Row>
-                <label>Cantidad generada a partir del ensamble</label>
-                <Col md={12}>
-                  <Item
-                    label=':'
-                    name="cantidad"
-                    rules={[
-                      { required: false },
-                      { type: 'number', message: 'Por favor, ingrese un valor numérico válido para la cantidad' },
-                    ]}
-                  >
-                    <InputNumber
-                      step={0.01}
-                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
-                      min={0}
-                    />
-                  </Item>
-                  <h6>Selecciona los artículos que ensamblan tu artículo</h6>
-                  <div style={{ border: '1px solid #A4A4A4', padding: '2%', margin: '5%' }}>
-                    <TransferContainer onValor={savedetalle} />
-                  </div>
-                </Col>
-              </Row>
-            )}
           </Form>
         </Modal>
       )}
