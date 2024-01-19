@@ -3,6 +3,7 @@ import { Table, Button, Modal, message, Form, Input, Select, InputNumber, Drawer
 import { Row, Col } from 'react-bootstrap';
 import { EditFilled, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import CrearComponenteForm from './CrearComponente';
+import TransferContainer from './selectcomponent.jsx';
 
 const { Item } = Form;
 const { Option } = Select;
@@ -15,6 +16,12 @@ const EditarComponenteForm = () => {
   const [opencom, setOpencom] = useState(false);
   const [categorias, setCategorias] = useState([]);
   const [form] = Form.useForm();
+  const [agregarDetalle, setagregarDetalle] = useState(false);
+  const [detallecomponente, setdetallecomponente] = useState(false);
+
+  const handleTipoChange = (value) => {
+    setagregarDetalle(value === 'F');
+  };
 
   const fetchCategorias = async () => {
     try {
@@ -51,7 +58,7 @@ const EditarComponenteForm = () => {
       } else {
         notification.error({
           message: 'Error',
-          description: 'Algo salío mal: '+data.error,
+          description: 'Algo salío mal: ' + data.error,
         });
       }
     } catch (error) {
@@ -69,7 +76,7 @@ const EditarComponenteForm = () => {
     setEditComponente(null);
     fetchComponentes();
   };
-  
+
   const fetchComponentes = async () => {
     try {
       const response = await fetch('http://127.0.0.1:8000/producto/listarcomponentes/');
@@ -227,6 +234,7 @@ const EditarComponenteForm = () => {
 
   const handleEdit = (record) => {
     setEditComponente(record);
+    handleTipoChange(record.tipo);
     setModalVisible(true);
   };
 
@@ -236,9 +244,14 @@ const EditarComponenteForm = () => {
       formDataObject.append('nombre', values.nombre);
       formDataObject.append('descripcion', values.description);
       formDataObject.append('tipo', values.tipo);
-      formDataObject.append('costo', values.costo.replace('$', '').replace(',', '.'));
+      console.log(values.tipo);
+      formDataObject.append('costo', (values.costo));
       formDataObject.append('categoria', values.id_categoria);
       formDataObject.append('id_um', values.id_um);
+      if (values.tipo == 'F') {
+        formDataObject.append('detalle_comp', detallecomponente);
+        formDataObject.append('cantidad', values.cantidad);
+      }
       const response = await fetch(`http://127.0.0.1:8000/producto/editarcomponente/${editComponente.id_componente}/`, {
         method: 'POST',
         body: formDataObject,
@@ -273,7 +286,9 @@ const EditarComponenteForm = () => {
       });
     }
   }, [modalVisible, editComponente, form]);
-
+  const savedetalle = async (jsondetalle) => {
+    setdetallecomponente(jsondetalle);
+  }
 
 
   return (
@@ -291,15 +306,15 @@ const EditarComponenteForm = () => {
       </div>
       {editComponente && (
         <Modal
-        title="Editar Componente"
-        visible={modalVisible}
-        onCancel={() => {
-          setModalVisible(false);
-          form.resetFields();
-          setEditComponente(null);
-        }}
-        footer={null}
-      >
+          title="Editar Componente"
+          visible={modalVisible}
+          onCancel={() => {
+            setModalVisible(false);
+            form.resetFields();
+            setEditComponente(null);
+          }}
+          footer={null}
+        >
           <Form
             form={form}
             onFinish={handleModalOk}
@@ -330,7 +345,7 @@ const EditarComponenteForm = () => {
             </Form.Item>
 
             <Item label="Tipo" name="tipo" initialValue={editComponente.tipo} rules={[{ required: true, message: 'Por favor, seleccione el tipo del componente' }]}>
-              <Select>
+              <Select onChange={handleTipoChange} >
                 <Option value="N">Normal</Option>
                 <Option value="F">Fabricado</Option>
               </Select>
@@ -351,6 +366,32 @@ const EditarComponenteForm = () => {
                 Guardar Cambios
               </Button>
             </Item>
+            {agregarDetalle && (
+
+              <Row>
+                <label>Cantidad generada a partir del ensamble</label>
+                <Col md={12}>
+                  <Item
+                    label=':'
+                    name="cantidad"
+                    rules={[
+                      { required: false },
+                      { type: 'number', message: 'Por favor, ingrese un valor numérico válido para la cantidad' },
+                    ]}
+                  >
+                    <InputNumber
+                      step={0.01}
+                      formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                      min={0}
+                    />
+                  </Item>
+                  <h6>Selecciona los artículos que ensamblan tu artículo</h6>
+                  <div style={{ border: '1px solid #A4A4A4', padding: '2%', margin: '5%' }}>
+                    <TransferContainer onValor={savedetalle} />
+                  </div>
+                </Col>
+              </Row>
+            )}
           </Form>
         </Modal>
       )}
