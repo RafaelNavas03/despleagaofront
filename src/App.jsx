@@ -1,37 +1,47 @@
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import LoginForm from './components/login';
-import RegisterForm from './components/registro';
-import AdminMenu from './components/adminmenu';
-{
-  /* The following line can be included in your src/index.js or App.js file */
-}
+const { Header , Content, Footer } = Layout;
+import { Layout, Menu, Row, Col, Image, Dropdown, Button, Badge, theme, Breadcrumb,Tooltip } from 'antd';
+import { BrowserRouter as Router, Routes,Route } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import MapComponent from './components/MapaUbicacion';
+import Carrusel from './components/pruebaCarrusel';
+import MenuNavBar from './components/MenuNavBar';
+import ProfileEditor from './components/EditarUser';
+function App() {
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
 
-const App = () => {
-  const [user, setUser] = useState(null);
-
-  const handleLogin = (userData) => {
-    setUser(userData);
-  };
-
-  const renderContent = () => {
-    const storedToken = localStorage.getItem('token');
-    if (user) {
-        return <AdminMenu />;
-    }
-    return <LoginForm onLogin={handleLogin} />;
-  };
-
+;
+  
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={renderContent()} />
-        <Route path="/registro" element={<RegisterForm />} />
-        <Route path="/home" element={<AdminMenu />} />
-      </Routes>
-    </Router>
-  );
-};
 
-export default App;
+
+    
+    <Router>
+      
+      <Layout>
+      <Content >
+      <div
+        
+        
+      >
+    
+    
+          <Routes>
+          
+          <Route path="/" element={<Carrusel/>}/>
+          <Route path="/Mapa" element={<MapComponent/>} />
+          <Route path="/Carrusel" element={< Carrusel/>}/>
+          <Route path="/Menu" element={<MenuNavBar/>} />
+          <Route path="/perfil" element={<ProfileEditor/>} />
+          </Routes>
+          </div>
+        </Content>
+        
+      </Layout>
+      
+    </Router>
+    
+  )
+}
+export default App
