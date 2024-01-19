@@ -115,7 +115,7 @@ const CrearComponenteForm = () => {
         message.error('Algo salió mal' + error);
       }
     } catch (error) {
-      notification.success({
+      notification.error({
         message: 'Error',
         description: 'Algo salió mal' + error,
       });
@@ -156,10 +156,11 @@ const CrearComponenteForm = () => {
         </Select>
       </Form.Item>
       <Item
-        label="Costo"
+        label="Costo de producción"
         name="costo"
+        values={0}
         rules={[
-          { required: false },
+          { required: true },
           { type: 'number', message: 'Por favor, ingrese un valor numérico válido para el costo' },
         ]}
       >

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Transfer, message, Table, Input, Form, InputNumber, Button, Select, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-const TransferContainer = ({onValor}) => {
+const TransferContainer = ({ onValor, detalle }) => {
     const [loading, setLoading] = useState(false);
     const [componenteslist, setComponentes] = useState([]);
     const [targetKeys, setTargetKeys] = useState([]);
@@ -14,7 +14,7 @@ const TransferContainer = ({onValor}) => {
         const items = componenteslistWithKeyTitle.filter(item => nextTargetKeys.includes(item.key));
         setSelectedItems(items);
         generateJson(items);
-        
+
     };
 
     const onSelectChange = (sourceSelectedKeys, targetSelectedKeys) => {
@@ -25,6 +25,9 @@ const TransferContainer = ({onValor}) => {
     const onScroll = (direction, e) => {
 
     };
+    useEffect(() => {
+        cargardetalle();
+    }, [])
 
     useEffect(() => {
         const fetchComponentes = async () => {
@@ -45,6 +48,7 @@ const TransferContainer = ({onValor}) => {
                         const selectedItems = items.map(item => item.key);
                         setSelectedKeys(selectedItems);
                     }
+
                 } else {
                     const errorData = await response.json();
                 }
@@ -58,8 +62,33 @@ const TransferContainer = ({onValor}) => {
 
         fetchComponentes();
     }, [targetKeys]);
+
+    const cargardetalle = () => {
+        if (detalle && detalle.length > 0) {
+            const initialTargetKeys = detalle.map(item => item.id_componentehijo.id.toString());
+            setTargetKeys(initialTargetKeys);
+            setSelectedKeys(initialTargetKeys);
+            const initialItems = componentesWithDefaultCosto.filter(item => initialTargetKeys.includes(item.key));
+            setSelectedItems(initialItems);
+            generateJson(initialItems);
+        }
+
+        if (detalle) {
+            const initialTargetKeys = detalle.detalle.map(item => item.id_componentehijo.id.toString());
+            setTargetKeys(initialTargetKeys);
+            setSelectedKeys(initialTargetKeys);
+            console.log(detalle.detalle);
+            const initialItems = detalle.detalle.map(item => ({
+                key: item.id_componentehijo.id.toString(),
+                title: item.id_componentehijo.nombre,
+                quantity: item.cantidadhijo,
+            }));
+            setSelectedItems(initialItems);
+            generateJson(initialItems);
+        }
+    }
+
     const handleQuantityChange = (key, quantity) => {
-        // Actualizar la cantidad en los elementos seleccionados
         const updatedItems = selectedItems.map(item =>
             item.key === key ? { ...item, quantity } : item
         );
@@ -68,80 +97,81 @@ const TransferContainer = ({onValor}) => {
     };
 
     const generateJson = (items) => {
-        // Crear un objeto JSON con los datos simplificados de los elementos seleccionados
         const jsonData = items.map(item => ({
             id: item.key,
-            cantidad: item.quantity|| 1,
+            cantidad: item.quantity || 1,
         }));
         const jsonString = JSON.stringify(jsonData, null, 2);
         if (typeof onValor === 'function') {
             onValor(jsonString);
-          }
+        }
     };
+    console.log(componenteslist);
 
     const componenteslistWithKeyTitle = componenteslist.map((componente) => ({
         key: componente.id_componente.toString(),
-        title: componente.nombre,
-        id_um: componente.id_um, // Agregar el campo id_um
+        title: componente.nombre + ' [' + componente.nombre_um + ']',
+        id_um: componente.id_um,
     }));
 
     return (
-        <Row>
-            <Col md={24}>
-                <Transfer
-                    dataSource={componenteslist.map((componente) => ({
-                        key: componente.id_componente.toString(),
-                        title: componente.nombre,
-                    }))}
-                    showSearch
-                    targetKeys={targetKeys}
-                    selectedKeys={selectedKeys}
-                    onChange={onChange}
-                    onSelectChange={onSelectChange}
-                    onScroll={onScroll}
-                    render={(item) => item.title}
-                    oneWay
-                    loading={loading}
-                    style={{ marginBottom: 16 }}
-                />
-            </Col>
-            <Col md={24}>
-                <div style={{ border: '1px solid #A4A4A4', margin: '2%', padding: '2%', height: '100%' }}>
-                    <h6>Artículos seleccionados</h6>
-                    <table className="table">
-                        <thead>
-                            <tr>
-                                <th></th>
-                                <th>Nombre</th>
-                                <th>Cantidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {selectedItems.map(item => (
-                                <tr key={item.key}>
-                                    <td>-</td>
-                                    <td>{item.title}</td>
-                                    <td>
-                                        <div className="input-group">
-                                            <input
-                                                type="number"
-                                                step="0.01"
-                                                min="0.01"
-                                                defaultValue={"1.00"}
-                                                className="form-control"
-                                                name={`cantidad_${item.key}`}
-                                                value={item.quantity}
-                                                onChange={(e) => handleQuantityChange(item.key, e.target.value)}
-                                            />
-                                        </div>
-                                    </td>
+        <div className='table-responsive'>
+            <Row>
+                <Col md={24}>
+                    <Transfer
+                        dataSource={componenteslist.map((componente) => ({
+                            key: componente.id_componente.toString(),
+                            title: componente.nombre,
+                        }))}
+                        showSearch
+                        targetKeys={targetKeys}
+                        selectedKeys={selectedKeys}
+                        onChange={onChange}
+                        onSelectChange={onSelectChange}
+                        onScroll={onScroll}
+                        render={(item) => item.title}
+                        oneWay
+                        loading={loading}
+                        style={{ marginBottom: 16 }}
+                    />
+                </Col>
+                <Col md={24}>
+                    <div style={{ border: '1px solid #A4A4A4', margin: '2%', padding: '2%', height: '100%' }}>
+                        <h6>Artículos seleccionados</h6>
+                        <table className="table">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Nombre</th>
+                                    <th>Cantidad</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </Col>
-        </Row >
+                            </thead>
+                            <tbody>
+                                {selectedItems.map(item => (
+                                    <tr key={item.key}>
+                                        <td>-</td>
+                                        <td>{item.title}</td>
+                                        <td>
+                                            <div className="input-group">
+                                                <input
+                                                    type="number"
+                                                    step="0.01"
+                                                    min="0.01"
+                                                    className="form-control"
+                                                    name={`cantidad_${item.key}`}
+                                                    value={item.quantity || 1}
+                                                    onChange={(e) => handleQuantityChange(item.key, e.target.value)}
+                                                />
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </Col>
+            </Row >
+        </div>
     );
 };
 
