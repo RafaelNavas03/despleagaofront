@@ -26,7 +26,8 @@ import ListSucursales from './listasucursales';
 import EditarUnidadesMedida from './editarunidadmedida';
 import EditarMesa from './editarmesa';
 import HorariosSemanales from './horariossemanal';
-import CrearHorariosSemanales from './crearhorarioS'
+import CrearHorariosSemanales from './crearhorarioS';
+import Recompensa from './recompensa.jsx';
 
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;

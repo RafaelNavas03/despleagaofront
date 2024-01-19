@@ -23,6 +23,9 @@ import Mesas from './editarmesa.jsx';
 import EditarBodegaForm from './editarbodega.jsx';
 import Proveedores from './proveedores.jsx';
 import Inventario from './editarinventario.jsx';
+import CrearRecompensaProductoForm from './CrearRecompensaProducto.jsx';
+import Recompensa from './recompensa.jsx';
+import EditarRecompensaProductoForm from './EditarRecompensaProducto.jsx';
 
 const MenuG = () => {
     const { Meta } = Card;
@@ -213,6 +216,7 @@ const MenuG = () => {
                                                 preview={false}
                                             />}
                                         className="text-center"
+                                        onClick={() => handleCardClick('Recompensas')}
                                     >
                                         <Meta title={tooltipTitle7}></Meta>
                                     </Card>
@@ -403,6 +407,16 @@ const MenuG = () => {
                         <Row>
                             <Col md={12}>
                                 <Inventario />
+                            </Col>
+                        </Row>
+
+                    </>)}
+                {currentPage == 'Recompensas' && (
+                    <>
+                        <Divider>Recompensas</Divider>
+                        <Row>
+                            <Col md={12}>
+                                <Recompensa/>
                             </Col>
                         </Row>
 
