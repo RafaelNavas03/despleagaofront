@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, Checkbox, Drawer, Form, Input, Button, Row, Col, Divider, Pagination, Tooltip, Avatar } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
+import EditarRecompensaComboForm from './EditarRecompensaCombo';
 
 const EditarRecompensaProductoForm = () => {
     const [recompensasProductos, setRecompensasProductos] = useState([]);
@@ -127,7 +128,7 @@ const EditarRecompensaProductoForm = () => {
                                 <>
                                     <Divider>Control productos</Divider>
                                     <Col md={12}>
-                                        <Button type="primary" style={{ width: '100%', margin: '2%' }} onClick={showDrawerp}>
+                                        <Button type="primary" style={{ width: '100%', margin: '2%' }} onClick={showDrawer}>
                                             Crear nuevo producto
                                         </Button>
                                     </Col>
@@ -158,7 +159,7 @@ const EditarRecompensaProductoForm = () => {
                                 <>
                                     <Divider>Control categorías</Divider>
                                     <Col md={12}>
-                                        {/* ... (existing code for categorías) */}
+                                        <EditarRecompensaComboForm/>
                                     </Col>
                                 </>
                             )}

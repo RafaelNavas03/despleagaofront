@@ -14,7 +14,7 @@ const CrearRecompensaProductoForm = () => {
       try {
         const productosResponse = await fetch('http://127.0.0.1:8000/producto/listar/');
         const recompensasProductosResponse = await fetch('http://127.0.0.1:8000/Recompensas/listar_productos_con_recompensas/');
-        
+
         const productosData = await productosResponse.json();
         const recompensasProductosData = await recompensasProductosResponse.json();
 
@@ -35,11 +35,9 @@ const CrearRecompensaProductoForm = () => {
     };
 
     fetchData();
-  }, []);
+  }, []);  // Sin dependencias
 
-  const productosFiltrados = productos.filter(producto => !productosConRecompensas.includes(producto.id_producto));
-
-  const opcionesProductos = productosFiltrados.map(producto => (
+  const opcionesProductos = productos.map(producto => (
     <Option key={producto.id_producto} value={producto.id_producto}>
       {producto.nombreproducto}
     </Option>
@@ -68,6 +66,14 @@ const CrearRecompensaProductoForm = () => {
       if (response.ok) {
         message.success(responseData.mensaje);
         form.resetFields();
+        
+        // Actualizar productosConRecompensas después de crear la recompensa
+        const recompensasProductosResponse = await fetch('http://127.0.0.1:8000/Recompensas/listar_productos_con_recompensas/');
+        const recompensasProductosData = await recompensasProductosResponse.json();
+        
+        if (Array.isArray(recompensasProductosData.productos_con_recompensas)) {
+          setProductosConRecompensas(recompensasProductosData.productos_con_recompensas);
+        }
       } else {
         message.error(responseData.error || 'Error al crear recompensa de producto');
       }
@@ -105,7 +111,7 @@ const CrearRecompensaProductoForm = () => {
         valuePropName="checked"
         rules={[{ required: true, message: 'Por favor, seleccione el estado de la recompensa' }]}
       >
-        <Checkbox></Checkbox>
+        <Checkbox>Activo</Checkbox>
       </Form.Item>
 
       <Form.Item>
