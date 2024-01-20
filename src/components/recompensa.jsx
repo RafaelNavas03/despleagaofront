@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Card, Checkbox, Drawer, Form, Input, Button, Row, Col, Divider, Tooltip, Avatar, Space, Radio, Segmented } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import imgmesas from './res/imgmesas.png';
+import recompensacombo from './res/recompensacombo.png';
+import recompensaproducto from './res/recompensaproducto.png';
 import CrearRecompensaProductoForm from './CrearRecompensaProducto'; // Ajusta la ruta según tu estructura de carpetas
 import EditarRecompensaComboForm from './EditarRecompensaCombo';
 
@@ -110,7 +112,7 @@ const EditarRecompensaProductoForm = () => {
                         label: (
                             <Tooltip title="Crear Promocion de producto">
                                 <div style={{ padding: 4 }}>
-                                    <Avatar shape="square" src={imgmesas} size="large" />
+                                    <Avatar shape="square" src={recompensaproducto} size="large" />
                                 </div>
                             </Tooltip>
                         ),
@@ -118,9 +120,9 @@ const EditarRecompensaProductoForm = () => {
                     },
                     {
                         label: (
-                            <Tooltip title="Crear Promocion de bodegas">
+                            <Tooltip title="Crear Promocion de combo">
                                 <div style={{ padding: 4 }}>
-                                    <Avatar shape="square" src={imgmesas} size="large" />
+                                    <Avatar shape="square" src={recompensacombo} size="large" />
                                 </div>
                             </Tooltip>
                         ),
