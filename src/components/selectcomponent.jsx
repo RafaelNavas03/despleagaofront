@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Transfer, message, Table, Input, Form, InputNumber, Button, Select, Row, Col } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 
-const TransferContainer = ({ onValor, detalle }) => {
+const TransferContainer = ({ onValor, previouslySelectedItems }) => {
     const [loading, setLoading] = useState(false);
     const [componenteslist, setComponentes] = useState([]);
     const [targetKeys, setTargetKeys] = useState([]);
@@ -26,7 +26,8 @@ const TransferContainer = ({ onValor, detalle }) => {
 
     };
     useEffect(() => {
-        cargardetalle();
+        SelectListForTransfer();
+        SelectListForTable();
     }, [])
 
     useEffect(() => {
@@ -42,7 +43,6 @@ const TransferContainer = ({ onValor, detalle }) => {
                     }));
                     setComponentes(componentesWithDefaultCosto);
 
-                    // Si ya hay targetKeys iniciales, selecciona esos elementos
                     if (targetKeys.length > 0) {
                         const items = componentesWithDefaultCosto.filter(item => targetKeys.includes(item.key));
                         const selectedItems = items.map(item => item.key);
@@ -63,28 +63,23 @@ const TransferContainer = ({ onValor, detalle }) => {
         fetchComponentes();
     }, [targetKeys]);
 
-    const cargardetalle = () => {
-        if (detalle && detalle.length > 0) {
-            const initialTargetKeys = detalle.map(item => item.id_componentehijo.id.toString());
+    //Registra los items en el tranfer
+    const SelectListForTransfer = () => {
+        if (previouslySelectedItems && previouslySelectedItems.detalle.length > 0) {
+            const initialTargetKeys = previouslySelectedItems.detalle.map(item => item.id_componentehijo.id.toString());
             setTargetKeys(initialTargetKeys);
-            setSelectedKeys(initialTargetKeys);
-            const initialItems = componentesWithDefaultCosto.filter(item => initialTargetKeys.includes(item.key));
-            setSelectedItems(initialItems);
-            generateJson(initialItems);
         }
-
-        if (detalle) {
-            const initialTargetKeys = detalle.detalle.map(item => item.id_componentehijo.id.toString());
-            setTargetKeys(initialTargetKeys);
-            setSelectedKeys(initialTargetKeys);
-            console.log(detalle.detalle);
-            const initialItems = detalle.detalle.map(item => ({
+    }
+    
+    //Registra los items en la tabla
+    const SelectListForTable = () => {
+        if (previouslySelectedItems && previouslySelectedItems.detalle.length > 0) {
+            const initialItems = previouslySelectedItems.detalle.map(item => ({
                 key: item.id_componentehijo.id.toString(),
                 title: item.id_componentehijo.nombre,
                 quantity: item.cantidadhijo,
             }));
             setSelectedItems(initialItems);
-            generateJson(initialItems);
         }
     }
 

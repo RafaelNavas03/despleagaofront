@@ -380,7 +380,7 @@ const EditarComponenteForm = () => {
                     </Item>
                     <h6>Selecciona los artículos que ensamblan tu artículo</h6>
                     <div style={{ border: '1px solid #A4A4A4', padding: '2%', margin: '5%' }}>
-                      <TransferContainer onValor={savedetalle} detalle={detalleeditar} />
+                      <TransferContainer onValor={savedetalle} previouslySelectedItems={detalleeditar} />
                     </div>
                   </Col>
                 </Row>

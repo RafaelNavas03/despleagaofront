@@ -3,6 +3,7 @@ import { Card, Space, Typography, Button, Modal, Form, Input, message, Image, Up
 import { EditTwoTone, EditOutlined, UploadOutlined } from '@ant-design/icons';
 import { Row, Col, Table } from 'react-bootstrap';
 import Sucursales from './sucursales';
+import EditarRecompensaProductoForm from './recompensa';
 
 
 const { Title } = Typography;
@@ -259,6 +260,7 @@ const Empresa = () => {
           </Button>
         </Form>
       </Drawer>
+      <EditarRecompensaProductoForm/>
     </>
   );
 };
