@@ -6,6 +6,7 @@ import MapComponent from './components/MapaUbicacion';
 import Carrusel from './components/pruebaCarrusel';
 import MenuNavBar from './components/MenuNavBar';
 import ProfileEditor from './components/EditarUser';
+import './index.css'
 function App() {
   const {
     token: { colorBgContainer, borderRadiusLG },
