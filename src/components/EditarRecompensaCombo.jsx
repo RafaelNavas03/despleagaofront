@@ -107,7 +107,7 @@ const EditarRecompensaComboForm = () => {
 
   return (
     <div>
-      <Divider>Control productos</Divider>
+      <Divider>Recompensas de Combos</Divider>
       
       <Button type="primary" style={{ width: '100%', margin: '2%' }} onClick={showCrearRecompensaDrawer}>
         Crear promoción de combo
