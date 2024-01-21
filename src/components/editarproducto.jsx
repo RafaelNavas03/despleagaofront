@@ -253,7 +253,7 @@ const EditarProducto = () => {
     };
 
     const handleEditClick = (productId) => {
-
+a
         const productoToEdit = productos.find((producto) => producto.id_producto === productId.id_producto);
         setEditingProductId(productId.id_producto);
         setInitialFormValues(productoToEdit);
@@ -468,7 +468,7 @@ const EditarProducto = () => {
                             <Row>
 
                                 {productos.map((producto) => (
-                                    <Col xs={24} sm={12} md={3} lg={3}>
+                                    <Col xs={24} sm={6} md={5} lg={3}>
                                         <Card
                                             key={producto.id_producto}
                                             hoverable

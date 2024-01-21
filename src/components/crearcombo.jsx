@@ -113,46 +113,47 @@ const NuevoComboForm = () => {
     const onFinishProductos = async () => {
         try {
             const isValid = await comboForm.validateFields();
-    
+
             const formData = new FormData();
-    
+
             console.log("veamos que pasa: " + comboForm.getFieldValue('nombrecb'));
-    
+
             formData.append('id_cat_combo', categoriaSeleccionada);
             formData.append('descripcion_combo', comboForm.getFieldValue('descripcion_combo'));
             formData.append('nombre_cb', comboForm.getFieldValue('nombrecb'));
             formData.append('puntos_cb', comboForm.getFieldValue('puntoscb'));
             formData.append('precio_unitario', comboForm.getFieldValue('precio_unitario'));
             formData.append('imagen_c', comboFileList.length > 0 ? comboFileList[0].originFileObj : null);
-    
+
             const detalleCombo = selectedProducts.map((product) => ({
                 id_producto: product.id_producto,
-                cantidad: categoriaCombo.getFieldValue(`quantity_${product.id_producto}`),
+                cantidad: product.cantidad,
             }));
-    
+            console.log('detalleCombo');
+            console.log(selectedProducts);
             formData.append('detalle_combo', JSON.stringify(detalleCombo));
-    
+
             const response = await fetch('http://127.0.0.1:8000/combos/crearcombo/', {
                 method: 'POST',
                 body: formData,
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 console.log('Respuesta del servidor:', data);
-    
+
                 notification.success({
                     message: 'Éxito',
                     description: 'Combo creado con éxito',
                 });
-    
+
                 comboForm.resetFields();
                 setComboFileList([]);
                 setSelectedProducts([]);
             } else {
                 const data = await response.json();
                 console.error('Error en la respuesta del servidor:', data);
-    
+
                 notification.error({
                     message: 'Error',
                     description: 'Error al crear el combo',
@@ -160,7 +161,7 @@ const NuevoComboForm = () => {
             }
         } catch (error) {
             console.error('Error en la petición:', error);
-    
+
             notification.error({
                 message: 'Error',
                 description: 'Error, algo salió mal',
@@ -180,32 +181,32 @@ const NuevoComboForm = () => {
             const formData = new FormData();
             formData.append('cat_nombre', values.catnombre);
             formData.append('descripcion', values.descripcion);
-    
+
             if (values.imagencategoria && values.imagencategoria.length > 0) {
                 formData.append('imagencategoria', values.imagencategoria[0].originFileObj);
             }
-    
+
             const response = await fetch('http://127.0.0.1:8000/combos/crearcat/', {
                 method: 'POST',
                 body: formData,
             });
-    
+
             if (response.ok) {
                 const data = await response.json();
                 console.log('Respuesta del servidor:', data);
-    
+
                 notification.success({
                     message: 'Éxito',
                     description: 'Categoría de combo creada con éxito',
                 });
-    
+
                 categoriaCombo.resetFields();
                 setCategoryFileList([]);
                 fetchCategorias();
             } else {
                 const data = await response.json();
                 console.error('Error en la respuesta del servidor:', data);
-    
+
                 notification.error({
                     message: 'Error',
                     description: 'Error al crear la categoría de combo',
@@ -213,7 +214,7 @@ const NuevoComboForm = () => {
             }
         } catch (error) {
             console.error('Error en la petición:', error);
-    
+
             notification.error({
                 message: 'Error de conexión',
                 description: 'Error al conectar con el servidor',
@@ -221,14 +222,14 @@ const NuevoComboForm = () => {
         }
     };
     const handleSelectProduct = (product) => {
+        console.log('id: ' + product)
         const isProductSelected = selectedProducts.some((selectedProduct) => selectedProduct.id_producto === product.id_producto);
-
+        console.log(comboForm.getFieldValue(`cantidad_${product.id_producto}`));
         if (isProductSelected) {
-            // Si el producto ya está seleccionado, incrementa la cantidad en 1
             setSelectedProducts((prevSelected) =>
                 prevSelected.map((selectedProduct) =>
                     selectedProduct.id_producto === product.id_producto
-                        ? { ...selectedProduct, cantidad: selectedProduct.cantidad + 1 }
+                        ? { ...selectedProduct, cantidad: categoriaCombo.getFieldValue(`cantidad_${product.id_producto}`) }
                         : selectedProduct
                 )
             );
@@ -237,6 +238,19 @@ const NuevoComboForm = () => {
             setSelectedProducts((prevSelected) => [...prevSelected, { ...product, cantidad: 1 }]);
         }
     };
+
+    const handleUpdateQuantity = (productId, newQuantity) => {
+        console.log(newQuantity);
+        setSelectedProducts((prevSelected) =>
+            prevSelected.map((selectedProduct) =>
+                selectedProduct.id_producto === productId
+                    ? { ...selectedProduct, cantidad: newQuantity }
+                    : selectedProduct
+            )
+        );
+        console.log(selectedProducts);
+    };
+
 
     const handleDeselectProduct = (productId) => {
         // Elimina el producto seleccionado
@@ -445,7 +459,7 @@ const NuevoComboForm = () => {
                                                 <p style={{ margin: 0, fontWeight: 'bold' }}>{selectedProduct.nombreproducto}</p>
                                                 <CloseOutlined style={{ fontSize: '20px', cursor: 'pointer' }} onClick={() => handleDeselectProduct(selectedProduct.id_producto)} />
                                             </div>
-                                            <Form.Item name={`quantity_${selectedProduct.id_producto}`} initialValue={1}>
+                                            <Form.Item name={`cantidad_${selectedProduct.id_producto}`} initialValue={1} onChange={(e) => handleUpdateQuantity(selectedProduct.id_producto, e.target.value)}>
                                                 <Input type="number" placeholder="Cantidad" min={1} />
                                             </Form.Item>
                                         </div>
@@ -520,7 +534,7 @@ const NuevoComboForm = () => {
                                 return true; // Permitir la carga del archivo válido
                             }}
                             accept=".png, .jpg, .jpeg"
-                        > 
+                        >
                             {categoryFileList.length >= 1 ? null : uploadButton}
                         </Upload>
                     </Form.Item>

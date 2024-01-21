@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Card, Input, Pagination, Button, Select, Modal, Upload, Tooltip, Badge, Segmented, Avatar, Checkbox, Drawer, Divider } from 'antd';
+import { Form, Card, Input, Pagination, Button, Select, Modal, Tooltip, Badge, Segmented, Avatar, Checkbox, Drawer, Divider, Watermark } from 'antd';
 import { Row, Col } from 'react-bootstrap';
+import { UploadOutlined, CalendarTwoTone, EditFilled } from '@ant-design/icons';
 import imgcombos from './res/imgcombos.png';
 import NuevoComboForm from './crearcombo';
 import categoriaproducto from './res/categoriaproducto.png';
@@ -16,9 +17,31 @@ const Combos = () => {
     const [total, setTotal] = useState(0);
     const [combos, setCombos] = useState([]);
     const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editingComboId, setEditingComboId] = useState(null);
+    const [initialFormValues, setInitialFormValues] = useState(null);
     const [form] = Form.useForm();
 
+    const handleEditClick = (id_combo) => {
+
+        const comboToEdit = combos.find((combo) => combo.id_combo === id_combo.id_combo);
+        setEditingComboId(id_combo.id_combo);
+
+        setInitialFormValues(comboToEdit);
+        setEditModalVisible(true);
+    };
+
+    const handleCancelEdit = () => {
+        form.resetFields();
+        fetchData(currentPage);
+        setOpenp(false);
+        setEditingComboId(null);
+        setInitialFormValues(null);
+        setEditModalVisible(false);
+    };
+
     const Changueopcion = (value) => {
+        form.resetFields();
+        fetchData(currentPage);
         setSelectedOpcion(value);
     }
 
@@ -27,6 +50,8 @@ const Combos = () => {
     };
 
     const onClosep = () => {
+        form.resetFields();
+        fetchData(currentPage);
         setOpenp(false);
     };
 
@@ -36,16 +61,16 @@ const Combos = () => {
 
     useEffect(() => {
         form.resetFields();
-        if (!editModalVisible) {
-            fetchData(currentPage);
-        }
-    }, [combos]);
+        fetchData(currentPage);
+    }, []);
 
     const fetchData = async (page) => {
         try {
+            console.log('xxxxxxxxxxxxxxxxxxA');
             const response = await fetch(`http://127.0.0.1:8000/combos/ver_combos/?page=${page}`);
             const data = await response.json();
-            setCombos(data.combo);
+            setCombos(data.combos);
+            console.log(data.combos);
 
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -94,7 +119,7 @@ const Combos = () => {
                         <Col md={12}>
                             <Row>
                                 {combos && combos.map((combo) => (
-                                    <Col xs={24} sm={12} md={3} lg={3}>
+                                    <Col xs={24} sm={6} md={5} lg={3}>
                                         <Card
                                             key={combo.id_combo}
                                             hoverable
@@ -105,7 +130,7 @@ const Combos = () => {
                                             cover={
                                                 combo.imagen ? (
                                                     <>
-                                                        <img alt={combo.nombrecb} src={`data:image/png;base64,${combos.imagen}`} height={'300px'} />
+                                                        <img alt={combo.nombrecb} src={`data:image/png;base64,${combo.imagen}`} height={'300px'} />
                                                         <Row align="right">
                                                             <Col md={8} />
                                                             <Col md={4}>
@@ -116,6 +141,23 @@ const Combos = () => {
                                                                         </Tooltip>
                                                                     </Col>
                                                                 </Row>
+                                                            </Col>
+                                                        </Row>
+                                                        <Row align="right">
+                                                            <Col md={8} />
+                                                            <Col md={4}>
+                                                                <Row align="right">
+                                                                    <Col md={5}>
+                                                                        <Tooltip title='Editar combo'>
+                                                                            <Button
+                                                                                icon={<EditFilled />}
+                                                                                onClick={() => handleEditClick(combo)}
+                                                                            >
+                                                                            </Button>
+                                                                        </Tooltip>
+                                                                    </Col>
+                                                                </Row>
+
                                                             </Col>
                                                         </Row>
                                                     </>
@@ -136,10 +178,34 @@ const Combos = () => {
                                                                 </Row>
                                                             </Col>
                                                         </Row>
+                                                        <Row align="right">
+                                                            <Col md={8} />
+                                                            <Col md={4}>
+                                                                <Row align="right">
+                                                                    <Col md={5}>
+                                                                        <Tooltip title='Editar combo'>
+                                                                            <Button
+                                                                                icon={<EditFilled />}
+                                                                                onClick={() => handleEditClick(combo)}
+                                                                            >
+                                                                            </Button>
+                                                                        </Tooltip>
+                                                                    </Col>
+                                                                </Row>
+
+                                                            </Col>
+                                                        </Row>
                                                     </>
                                                 )
                                             }
                                         >
+                                            <Meta title={combo.nombrecb} description={combo.descripcioncombo} />
+                                            <Tooltip title={"Puntos de " + combo.nombrecb}>
+                                                <Badge count={combo.puntos} showZero color='#faad14' />
+                                            </Tooltip>
+                                            <Tooltip title={"Precio de " + combo.nombrecb}>
+                                                <Badge count={'$' + combo.preciounitario} showZero color='#06CE15' style={{ margin: '10px' }} />
+                                            </Tooltip>
                                         </Card>
                                     </Col>
                                 ))}
@@ -158,7 +224,7 @@ const Combos = () => {
             <Drawer
                 title="Crear combo"
                 width={720}
-                onClose={onClosep}
+                onClose={handleCancelEdit}
                 open={openp}
                 styles={{
                     body: {
@@ -168,6 +234,25 @@ const Combos = () => {
             >
                 < NuevoComboForm />
             </Drawer>
+            <Modal
+                title={`Productos de ${initialFormValues ? initialFormValues.nombrecb : ''}`}
+                visible={!!editModalVisible}
+                onCancel={handleCancelEdit}
+                footer={null}
+            >
+                {initialFormValues && initialFormValues.productos.length > 0 ? (
+                    <div>
+                        <p>Productos:</p>
+                        <ul>
+                            {initialFormValues.productos.map((producto) => (
+                                <li key={producto.id_producto}>{producto.nombreproducto} Cantidad: {producto.cantidad} </li>
+                            ))}
+                        </ul>
+                    </div>
+                ) : (
+                    <p>No hay productos asociados a este combo</p>
+                )}
+            </Modal>
         </div>
     );
 };

@@ -165,7 +165,7 @@ const EditarComponenteForm = () => {
       key: 'acciones',
       render: (_, record) => (
         <Row>
-          <Col md={3}>
+          <Col md={5}>
             <Tooltip title='Editar artículo'>
               <Button
                 icon={<EditFilled />}
@@ -174,7 +174,7 @@ const EditarComponenteForm = () => {
               </Button>
             </Tooltip>
           </Col >
-          <Col md={3}>
+          <Col md={5}>
             <Tooltip title='Eliminar producto'>
               <Popconfirm
                 title="Eliminar artículo"
@@ -190,7 +190,7 @@ const EditarComponenteForm = () => {
               </Popconfirm>
             </Tooltip>
           </Col >
-          <Col md={3}>
+          <Col md={4}>
             <Tooltip
               title='Ver componente'
               overlayStyle={{ width: 300 }}
