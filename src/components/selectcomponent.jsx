@@ -70,7 +70,7 @@ const TransferContainer = ({ onValor, previouslySelectedItems }) => {
             setTargetKeys(initialTargetKeys);
         }
     }
-    
+
     //Registra los items en la tabla
     const SelectListForTable = () => {
         if (previouslySelectedItems && previouslySelectedItems.detalle.length > 0) {
@@ -80,6 +80,7 @@ const TransferContainer = ({ onValor, previouslySelectedItems }) => {
                 quantity: item.cantidadhijo,
             }));
             setSelectedItems(initialItems);
+            generateJson(initialItems);
         }
     }
 

@@ -18,7 +18,7 @@ const EditarComponenteForm = () => {
   const [form] = Form.useForm();
   const [agregarDetalle, setagregarDetalle] = useState(false);
   const [detallecomponente, setdetallecomponente] = useState(false);
-  const [detalleeditar, setdetalleeditar] = useState(null);
+  const [detalleeditar, setdetalleeditar] = useState(false);
 
   const handleTipoChange = (value) => {
     setagregarDetalle(value === 'F');
@@ -144,7 +144,7 @@ const EditarComponenteForm = () => {
       ),
     },
     {
-      title: 'Costo',
+      title: 'Costo ($)',
       dataIndex: 'costo',
       key: 'costo',
     },
@@ -235,12 +235,14 @@ const EditarComponenteForm = () => {
 
   const handleModalOk = async (values) => {
     try {
+      console.log("Valor a enviar:");
+      console.log(detallecomponente);
       const formDataObject = new FormData();
       formDataObject.append('nombre', values.nombre);
       formDataObject.append('descripcion', values.description);
       formDataObject.append('tipo', values.tipo);
       console.log(values.tipo);
-      formDataObject.append('costo', (values.costo));
+      formDataObject.append('costo', values.costo);
       formDataObject.append('categoria', values.id_categoria);
       formDataObject.append('id_um', values.id_um);
       if (values.tipo == 'F') {
@@ -253,20 +255,29 @@ const EditarComponenteForm = () => {
       });
       const data = await response.json();
       if (response.ok) {
-        message.success(data.mensaje);
         setComponentes((prevComponentes) =>
           prevComponentes.map((c) =>
             c.id_componente === editComponente.id_componente ? { ...c, ...data.componente } : c
           )
         );
         setModalVisible(false);
+        console.log('vamo');
         fetchComponentes();
+        notification.success({
+          message: 'Éxito',
+          description: 'Artículo editado con exito',
+        });
       } else {
-        message.error(data.error);
+        notification.error({
+          message: 'Error',
+          description: 'Algo salió mal:'+data.error,
+        });
       }
     } catch (error) {
-      console.error('Error al editar el componente:', error);
-      message.error('Ocurrió un error al editar el componente');
+      notification.error({
+        message: 'Error',
+        description: 'Algo salió mal:'+error,
+      });
     }
   };
   useEffect(() => {
@@ -366,15 +377,10 @@ const EditarComponenteForm = () => {
                     <Item
                       label=':'
                       name="cantidad"
-                      initialValue={(detalleeditar && detalleeditar.padrecant)}
-                      rules={[
-                        { required: false },
-                        { type: 'number', message: 'Por favor, ingrese un valor numérico válido para la cantidad' },
-                      ]}
+                      initialValue={(detalleeditar && (detalleeditar.padrecant))}
                     >
                       <InputNumber
                         step={0.01}
-                        formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
                         min={0}
                       />
                     </Item>
