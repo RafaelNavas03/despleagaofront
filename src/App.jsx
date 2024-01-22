@@ -21,6 +21,7 @@ import ProfileEditor from "./components/EditarUser";
 import LoginForm from "./components/Login";
 import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
+import MenuCocina from "./components/menucocina";
 import React, { useState } from 'react';
 
 function App() {
@@ -57,7 +58,7 @@ function App() {
               <Route path="/Menu" element={<MenuNavBar />} />
               <Route path="/perfil" element={<ProfileEditor />} />
               <Route path="/home" element={<AdminMenu />} />
-
+              <Route path="/cocina" element={<MenuCocina/>} />
               {/* Rutas para autenticación */}
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
               <Route path="/registro" element={<RegisterForm />} />
