@@ -1,20 +1,19 @@
-
-import React, { useState, useEffect } from 'react';
-import { Form, Input, Button, Alert, message } from 'antd';
-import { Link } from 'react-router-dom';
-import '../login.css';
+import React, { useState, useEffect } from "react";
+import { Form, Input, Button, Alert, message } from "antd";
+import { Link } from "react-router-dom";
+import "../login.css";
 
 const LoginForm = ({ onLogin }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://127.0.0.1:8000/Login/rol/', {
-          method: 'POST',
+        const response = await fetch("http://127.0.0.1:8000/Login/rol/", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            token: localStorage.getItem('token'), // Obtener el token almacenado
+            token: localStorage.getItem("token"), // Obtener el token almacenado
           }),
         });
 
@@ -25,63 +24,86 @@ const LoginForm = ({ onLogin }) => {
           // Puedes realizar acciones con el rol recibido si es necesario
 
           // Ejemplo de redirección basada en el rol
-          if (rol === 'S') {
-            console.log('Aqui se llego');
-            window.location.href = '/home';
+          if (rol === "S") {
+            console.log("Aqui se llego");
+            window.location.href = "/home";
           }
         } else {
           // Manejar errores de la solicitud a la API
-          console.log('error');
+          console.log("error");
         }
       } catch (error) {
         // Manejar errores de la solicitud
-        console.error('Error en la solicitud:', error);
+        console.error("Error en la solicitud:", error);
       }
     };
- 
+
     // Llamar a la función fetchData al cargar el componente
     fetchData();
   }, []);
   const onFinish = async (values) => {
     try {
-      const response = await fetch('http://127.0.0.1:8000/Login/iniciar_sesion/', {
-        method: 'POST',
+      const response = await fetch("http://127.0.0.1:8000/Login/iniciar_sesion/", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           nombreusuario: values.username,
           contrasenia: values.password,
         }),
       });
-
+  
       const data = await response.json();
       console.log(data); // Verifica si el token está presente en la respuesta
-
+  
       if (response.ok) {
         const token = data.token;
-        console.log('Token almacenado:', token);
-
-        localStorage.setItem('token', token);
+        console.log("Token almacenado:", token);
+  
+        localStorage.setItem("token", token);
         setTimeout(() => {
-          localStorage.removeItem('token');
-          console.log('Token eliminado después de 24 horas.');
+          localStorage.removeItem("token");
+          console.log("Token eliminado después de 24 horas.");
         }, 24 * 60 * 60 * 1000);
         onLogin(data);
+  
+        // Después de que el usuario ha iniciado sesión, realiza la redirección
+        const rolResponse = await fetch("http://127.0.0.1:8000/Login/rol/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            token: token, // Utiliza el token recién obtenido
+          }),
+        });
+  
+        if (rolResponse.ok) {
+          const rolData = await rolResponse.json();
+          const rol = rolData.rol;
+  
+          if (rol === "S") {
+            console.log("Redirigiendo a /home");
+            window.location.href = "/home";
+          }
+        } else {
+          console.log("Error al obtener el rol");
+        }
       } else {
         // Manejar errores de inicio de sesión
-        console.error('Error en inicio de sesión:', data.mensaje);
+        console.error("Error en inicio de sesión:", data.mensaje);
         message.error(data.mensaje);
       }
     } catch (error) {
-      console.error('Error en la solicitud de inicio de sesión:', error);
+      console.error("Error en la solicitud de inicio de sesión:", error);
     }
   };
+  
 
   const onFinishFailed = (errorInfo) => {
-    console.log('Failed:', errorInfo);
+    console.log("Failed:", errorInfo);
   };
-  
 
   return (
     <Form
@@ -96,7 +118,7 @@ const LoginForm = ({ onLogin }) => {
       <Form.Item
         label="Usuario"
         name="username"
-        rules={[{ required: true, message: 'Por favor, ingresa tu usuario' }]}
+        rules={[{ required: true, message: "Por favor, ingresa tu usuario" }]}
       >
         <Input />
       </Form.Item>
@@ -104,7 +126,9 @@ const LoginForm = ({ onLogin }) => {
       <Form.Item
         label="Contraseña"
         name="password"
-        rules={[{ required: true, message: 'Por favor, ingresa tu contraseña' }]}
+        rules={[
+          { required: true, message: "Por favor, ingresa tu contraseña" },
+        ]}
       >
         <Input.Password />
       </Form.Item>
@@ -117,8 +141,12 @@ const LoginForm = ({ onLogin }) => {
 
       {/* Nuevo botón para registro */}
       <Form.Item>
-        <Link to={'/registro'}>
-          <Button type="default" htmlType="button" className="register-form-button">
+        <Link to={"/registro"}>
+          <Button
+            type="default"
+            htmlType="button"
+            className="register-form-button"
+          >
             Registrarse
           </Button>
         </Link>
@@ -129,7 +157,7 @@ const LoginForm = ({ onLogin }) => {
         message="¿No tienes cuenta? Regístrate para disfrutar de más funciones."
         type="info"
         showIcon
-        style={{ marginTop: '10px' }}
+        style={{ marginTop: "10px" }}
       />
     </Form>
   );
