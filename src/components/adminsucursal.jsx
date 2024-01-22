@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Table, Select, Switch,message , notification, Modal, Upload, Card, Tooltip, Watermark, Badge, Tag, Divider, Drawer, Segmented, Avatar } from 'antd';
+import { Form, Input, Button, Table, Select, Switch, message, notification, Modal, Upload, Card, Tooltip, Watermark, Badge, Tag, Divider, Drawer, Segmented, Avatar } from 'antd';
 import { Row, Col } from 'react-bootstrap';
-import { UploadOutlined, EditFilled, UserOutlined } from '@ant-design/icons';
+import { UploadOutlined, EditFilled, UserOutlined, RadarChartOutlined } from '@ant-design/icons';
 import MapaActual from './mapaactual';
 import CrearHorariosSemanales from './crearhorarioS';
 import TextArea from 'antd/es/input/TextArea';
@@ -13,6 +13,8 @@ import cocinero from './res/cocinero.png';
 import anadir from './res/anadir.png'
 import EditarEmpleado from './EditarEmpleado';
 import CrearEmpleadoForm from './crearempleado';
+import Geosector from './geosector';
+
 
 const { Option } = Select;
 
@@ -31,10 +33,50 @@ const AdminSucursal = ({ idsucursalx }) => {
     const [openu, setOpenu] = useState(false);
     const [selectedOficio, setSelectedOficio] = useState('Administradores');
     const [opene, setOpene] = useState(false);
+    const [datosGeosector, setGeosector] = useState(null);
+    const [valorGeo, setvalorGeo] = useState(false);
+
+    const editGeosector = async (datosGeosectorjson) => {
+        try {
+            console.log('Lllega algo:');
+            console.log(datosGeosector);
+            const formDataObject = new FormData();
+            formDataObject.append('datosGeosector', JSON.stringify(datosGeosectorjson));
+            formDataObject.append('secnombre','Sectorid:'+idsucursalx );
+            formDataObject.append('secdescripcion','Sector de atencion' );
+            formDataObject.append('id_sucursal',idsucursalx );
+
+            const response = await fetch('http://127.0.0.1:8000/sucursal/crearGeosector/', {
+                method: 'POST',
+                body: formDataObject,
+            });
+            
+
+            const responseData = await response.json();
+
+            if (responseData.mensaje) {
+                notification.success({
+                    message: 'Éxito',
+                    description: 'Zona de cobertura editada exitosamente',
+                });
+            } else {
+                notification.error({
+                    message: 'Error',
+                    description: 'Error al editar el horario: ' + responseData.error,
+                });
+            }
+        } catch (error) {
+            notification.error({
+                message: 'Error',
+                description: 'Error al validar el formulario:'+error,
+            });
+        }
+    };
 
     const showDrawere = () => {
         setOpene(true);
     };
+    
 
     const onClosee = () => {
         setSelectedOficio('Administradores');
@@ -108,6 +150,13 @@ const AdminSucursal = ({ idsucursalx }) => {
             });
         }
     };
+
+    const saveGeosector = async (jsondetalle) => {
+        setGeosector(jsondetalle);
+        console.log('llego algo aquí?:');
+        console.log(jsondetalle);
+        editGeosector(jsondetalle);
+      }
 
 
     const handleHorarioCreate = async (jsonHorario) => {
@@ -187,6 +236,9 @@ const AdminSucursal = ({ idsucursalx }) => {
 
                 setLoading(false);
                 setSucursalData(data.mensaje[0]);
+                if(data.mensaje[0].id_geosector && data.mensaje[0].id_geosector.ubicaciones_geosector){
+                    setvalorGeo(data.mensaje[0].id_geosector.ubicaciones_geosector);
+                }
 
             } else {
                 console.error('No se encontraron datos de la sucursal');
@@ -194,7 +246,6 @@ const AdminSucursal = ({ idsucursalx }) => {
             }
             fetchHorarioDetails(data.mensaje[0].id_horarios);
             sethorarioid(data.mensaje[0].id_horarios);
-
             setFileList([
                 {
                     uid: '-1',
@@ -734,9 +785,18 @@ const AdminSucursal = ({ idsucursalx }) => {
                             onChange={handleOficioChange}
                         />
                     </Col>
+                    <Col md={12}>
+                        <EditarEmpleado idsucur={idsucursalx} oficio={selectedOficio}></EditarEmpleado>
+                    </Col>
+                    
                 </Row>
-                <EditarEmpleado idsucur={idsucursalx} oficio={selectedOficio}></EditarEmpleado>
+
             </Row>
+            <Divider>Zona de cobertura</Divider>
+            {sucursalData && sucursalData.id_ubicacion && sucursalData.id_ubicacion.latitud && (
+            <Geosector onGeoSectorSave={saveGeosector} prevValores={valorGeo} shadedPolygonCoordinates={{ latitude: sucursalData.id_ubicacion.latitud, longitude: sucursalData.id_ubicacion.longitud }} />
+
+            )}
             <Drawer
                 title="Crear empleado"
                 width={720}
