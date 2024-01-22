@@ -1,25 +1,35 @@
-import React, { useState } from 'react';
-import { Layout, Menu,Drawer, Badge,Dropdown, Modal, Space, Avatar } from 'antd';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import {
+  Layout,
+  Menu,
+  Drawer,
+  Badge,
+  Dropdown,
+  Modal,
+  Space,
+  Avatar,
+} from "antd";
+import { Link } from "react-router-dom";
 import {
   MenuOutlined,
   ShoppingOutlined,
   SettingOutlined,
   BellOutlined,
   UserOutlined,
-} from '@ant-design/icons';
-import Nav from 'react-bootstrap/Nav';
+} from "@ant-design/icons";
+import Nav from "react-bootstrap/Nav";
 
-import LoginForm from './Login';
-import logo from '../assets/images/descargar.jpg';
-import Registro from './registro';
+import LoginForm from "./Login";
+import logo from "../assets/images/descargar.jpg";
+import Registro from "./registro";
 
 const { Header } = Layout;
 
-const Navbar = ({ cartTotal } ) => {
+const Navbar = ({ cartTotal }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isRegistrationModalVisible, setIsRegistrationModalVisible] = useState(false);
+  const [isRegistrationModalVisible, setIsRegistrationModalVisible] =
+    useState(false);
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -37,18 +47,14 @@ const Navbar = ({ cartTotal } ) => {
     setIsModalVisible(false);
   };
 
-  
   const handleLogin = (userData) => {
-  
-
     // Manejar la lógica de inicio de sesión y establecer isLoggedIn en true
     setIsLoggedIn(true);
     // Cerrar el modal al iniciar sesión
     setIsModalVisible(false);
     // Puedes realizar otras acciones necesarias después del inicio de sesión
-    console.log('Usuario ha iniciado sesión:', userData);
+    console.log("Usuario ha iniciado sesión:", userData);
   };
-
 
   const [cart, setCart] = useState([]);
   const [drawerVisible, setDrawerVisible] = useState(false);
@@ -62,17 +68,15 @@ const Navbar = ({ cartTotal } ) => {
   };
 
   const handleAddToCart = (product) => {
-  setCart((prevCart) => [...prevCart, product]);
-};
-
+    setCart((prevCart) => [...prevCart, product]);
+  };
 
   return (
     <Layout>
       {/* NavBar */}
       <Header className=" h-100   flex items-center  items-center">
         <div className="flex items-center">
-        <span className="text-white">Hamburguesas al carbón</span>
-          
+          <span className="text-white">Hamburguesas al carbón</span>
         </div>
 
         <Menu
@@ -80,83 +84,79 @@ const Navbar = ({ cartTotal } ) => {
           mode="horizontal"
           className="flex-1 min-w-0 justify-end "
         >
-          
           <Menu.Item key="1">
-            <Link to="/Menu">
-              Menú
-            </Link>
+            <Link to="/Menu">Menú</Link>
           </Menu.Item>
-
 
           {isLoggedIn ? (
             <>
-            <Menu.Item key="2">Reservaciones</Menu.Item>
-            <Menu.Item key="2">Puntos</Menu.Item>
-          <Menu.Item key="3" onClick={showDrawer}>
-            <Badge count={cartTotal} size="small">
-              <ShoppingOutlined className="text-white" />
-            </Badge>
-          </Menu.Item>
-          <Menu.Item key="4">
-            <BellOutlined className="text-white" />
-          </Menu.Item>
-        <Menu.Item key="6">
-          <Dropdown
-            overlay={
-              <Menu>
-                <Menu.Item key="profile">
-                  <Link to="/perfil">Ver Perfil</Link>
-                </Menu.Item>
-                <Menu.Item key="logout" onClick={() => setIsLoggedIn(false)}>
-                  Cerrar Sesión
-                </Menu.Item>
-              </Menu>
-            }
-            placement="bottomRight"
-            trigger={['click']}
-          >
-            <span>
-              <UserOutlined className="text-white" />
-              <span>Perfil</span>
-            </span>
-          </Dropdown>
-               
-        </Menu.Item>
-        </>
+              <Menu.Item key="2">Reservaciones</Menu.Item>
+              <Menu.Item key="2">Puntos</Menu.Item>
+              <Menu.Item key="3" onClick={showDrawer}>
+                <Badge count={cartTotal} size="small">
+                  <ShoppingOutlined className="text-white" />
+                </Badge>
+              </Menu.Item>
+              <Menu.Item key="4">
+                <BellOutlined className="text-white" />
+              </Menu.Item>
+              <Menu.Item key="6">
+                <Dropdown
+                  overlay={
+                    <Menu>
+                      <Menu.Item key="profile">
+                        <Link to="/perfil">Ver Perfil</Link>
+                      </Menu.Item>
+                      <Menu.Item
+                        key="logout"
+                        onClick={() => setIsLoggedIn(false)}
+                      >
+                        Cerrar Sesión
+                      </Menu.Item>
+                    </Menu>
+                  }
+                  placement="bottomRight"
+                  trigger={["click"]}
+                >
+                  <span>
+                    <UserOutlined className="text-white" />
+                    <span>Perfil</span>
+                  </span>
+                </Dropdown>
+              </Menu.Item>
+            </>
           ) : (
-          <Menu.Item key="5" onClick={showModal}>
-            <Space>
-              <Avatar icon={<UserOutlined />} />
-              <span>Iniciar Sesión</span>
-            </Space>
-          </Menu.Item>
-        )}
-          
+            <Menu.Item key="5" onClick={showModal}>
+              <Space>
+                <Avatar icon={<UserOutlined />} />
+                <span>Iniciar Sesión</span>
+              </Space>
+            </Menu.Item>
+          )}
         </Menu>
       </Header>
-      <Nav variant="underline"  >
-      <div className="flex mx-auto ">
-      <Nav.Item className='mt-20 py-20'> 
-        <Nav.Link className="text-gray-800 hover:text-red-500 font-bold" >
-            Menú
-        </Nav.Link>
-      </Nav.Item>
-        <Link to="/">
+      <Nav variant="underline">
+        <div className="flex mx-auto ">
+          <Nav.Item className="mt-20 py-20">
+            <Nav.Link className="text-gray-800 hover:text-red-500 font-bold">
+              Menú
+            </Nav.Link>
+          </Nav.Item>
+          <Link to="/">
             <img
               src={logo}
               alt="Logo"
-              style={{ height: '220px',margin: '26px', borderRadius: '50%' }}
+              style={{ height: "220px", margin: "26px", borderRadius: "50%" }}
             />
-          </Link>     
-         
-      <Nav.Item className='mt-20 py-20 font-bold'>
-        <Nav.Link className="text-gray-800 hover:text-red-500 font-bold">
-          Active</Nav.Link>
-      </Nav.Item>
-  
-      </div>
-   
-      </Nav>  
+          </Link>
+
+          <Nav.Item className="mt-20 py-20 font-bold">
+            <Nav.Link className="text-gray-800 hover:text-red-500 font-bold">
+              Active
+            </Nav.Link>
+          </Nav.Item>
+        </div>
+      </Nav>
 
       {/* Agregar el modal */}
       <Modal
@@ -165,7 +165,10 @@ const Navbar = ({ cartTotal } ) => {
         footer={null}
         width="400px"
       >
-        <LoginForm onLogin={handleLogin} onShowRegistration={showRegistrationModal} />
+        <LoginForm
+          onLogin={handleLogin}
+          onShowRegistration={showRegistrationModal}
+        />
       </Modal>
 
       <Modal
@@ -174,10 +177,10 @@ const Navbar = ({ cartTotal } ) => {
         footer={null}
         width="400px"
       >
-         <Registro onGoBackToLogin={handleGoBackToLogin} />
+        <Registro onGoBackToLogin={handleGoBackToLogin} />
       </Modal>
- {/* Drawer para mostrar los detalles del carrito */}
- <Drawer
+      {/* Drawer para mostrar los detalles del carrito */}
+      <Drawer
         title="Detalles del Carrito"
         placement="right"
         closable={false}
@@ -194,12 +197,17 @@ const Navbar = ({ cartTotal } ) => {
           </div>
         ))}
         {/* Puedes mostrar el total, botones de checkout, etc. */}
-        <p>Total: ${cart.reduce((total, product) => total + product.price * product.quantity, 0).toFixed(2)}</p>
+        <p>
+          Total: $
+          {cart
+            .reduce(
+              (total, product) => total + product.price * product.quantity,
+              0
+            )
+            .toFixed(2)}
+        </p>
         <button onClick={onClose}>Cerrar</button>
       </Drawer>
-
-
-      
     </Layout>
   );
 };

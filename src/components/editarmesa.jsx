@@ -107,7 +107,7 @@ const Mesas = () => {
     if (!editModalVisible) {
       cargarMesas(currentPage);
     }
-  }, [mesas]);
+  }, []);
 
   const columns = [
     {
