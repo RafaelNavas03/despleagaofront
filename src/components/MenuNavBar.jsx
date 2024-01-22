@@ -8,7 +8,7 @@ import god2 from '../assets/images/god3.jpg';
 import god3 from '../assets/images/god2.jpg';
 import BottomBar2 from './BottomBar2';
 import ProductsList from './ListaProductos';
-import "./index.css";
+
 const MenuNavBar = () => {
   const imagesWithText = [
     { src: god, text: 'Texto 1' },

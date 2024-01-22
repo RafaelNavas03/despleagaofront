@@ -12,7 +12,6 @@ import MyNavbar from "../components/NavBar2";
 import Lottie from "react-lottie";
 import A from "../assets/lottis/A.json";
 import B from "../assets/lottis/C.json";
-import "./index.css";
 
 const bestSellers = [
   {

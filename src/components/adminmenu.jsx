@@ -6,29 +6,6 @@ import EditarCliente from './editarcliente.jsx';
 import MenuG from './menu.jsx';
 
 
-
-import CrearTipoProducto from './creartipoproducto';
-import CrearEmpleadoForm from './crearempleado';
-import CrearCategoria from './crearcategoria';
-import EditarTipoProducto from './editartipoproducto';
-import EditarCategoria from './editarcategoria';
-import CrearAvisos from './crearavisosprincipales';
-import EditarAvisos from './editaravisos';
-import CrearMesa from './crearmesa';
-import NuevoComboForm from './crearcombo';
-import Empresa from './Empresa';
-import CrearProductoForm from './CrearProducto';
-import EditarEmpleado from './EditarEmpleado';
-import CrearUnidadMedida from './CrearUM';
-import EditarCombo from './editarcombo';
-import EditarProducto from './editarproducto';
-import ListSucursales from './listasucursales';
-import EditarUnidadesMedida from './editarunidadmedida';
-import EditarMesa from './editarmesa';
-import HorariosSemanales from './horariossemanal';
-import CrearHorariosSemanales from './crearhorarioS';
-import Recompensa from './recompensa.jsx';
-
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { Meta } = Card;
