@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser, faMapMarkerAlt, faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import logo from '../assets/images/descargar.jpg';
 import Map from './Map';
+import "./index.css";
 
 const ProfileEditor = () => {
  

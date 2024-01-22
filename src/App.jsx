@@ -21,8 +21,6 @@ import ProfileEditor from "./components/EditarUser";
 import LoginForm from "./components/Login";
 import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
-
-import "./index.css";
 import React, { useState } from 'react';
 
 function App() {
