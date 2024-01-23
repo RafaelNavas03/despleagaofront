@@ -3,6 +3,7 @@ import { UserOutlined } from '@ant-design/icons';
 import { Layout, Input, Segmented, Avatar, Card, Divider, Watermark } from 'antd';
 import { Container, Row, Col, Button, Form, Nav, Navbar, NavDropdown, Dropdown, Offcanvas } from 'react-bootstrap';
 import TipoProducto from './cocina/tipoproducto';
+import CategoriaCocina from './cocina/categoria';
 
 const MenuCocina = () => {
     const [empresaInfo, setEmpresaInfo] = useState(null);
@@ -24,14 +25,11 @@ const MenuCocina = () => {
                 },
                 body: JSON.stringify({}),
             });
-            console.log();
             const datos = await respuesta.json();
-            console.log(datos.empresa_info);
             setEmpresaInfo(datos.empresa_info);
             fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
                 .then((response) => response.json())
                 .then((data) => {
-                    console.log(data.sucursales)
                     setSucursalesData(data.sucursales);
                     if (data.sucursales && data.sucursales.length > 0) {
                         const allSucursalesOptions = data.sucursales.map((sucursal) => ({
@@ -99,7 +97,7 @@ const MenuCocina = () => {
             <div style={{ backgroundColor: '#DBE3E3', padding: '0.5%', height: '100%' }}>
                 <Navbar expand="lg" style={{ backgroundColor: '#4CAF50', color: '#fff', borderRadius: '10px' }}>
                     <Container fluid>
-                        <Navbar.Brand href="/home">
+                        <Navbar.Brand href="/cocina">
                             {empresaInfo && empresaInfo.elogo && (
                                 <img src={`data:image/png;base64,${empresaInfo.elogo}`} width={50} style={{ borderRadius: '50%' }} />
                             )}
@@ -164,14 +162,10 @@ const MenuCocina = () => {
                                     <Row>
                                         <Col md={12}>
                                             <Divider>Tipos de productos</Divider>
-                                            <TipoProducto></TipoProducto>
-                                            
+                                            <TipoProducto></TipoProducto>                                            
                                         </Col>
                                         <Col md={12}>
                                             
-                                        </Col>
-                                        <Col md={12}>
-                                            <Divider>Categorias</Divider>
                                         </Col>
                                     </Row>
                                 </Col>

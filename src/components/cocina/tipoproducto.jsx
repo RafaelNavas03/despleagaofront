@@ -1,24 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Button, Modal, Form, Input, message, Tooltip, Popconfirm } from 'antd';
-import { EditTwoTone, DeleteFilled } from '@ant-design/icons';
-import { EditOutlined, DeleteOutlined } from '@ant-design/icons'; // Importa los íconos necesarios
+import { Card, Row, Col, message, Divider } from 'antd';
+import CategoriaCocina from './categoria';
+import './style.css'
 
 const TipoProducto = () => {
-  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [data, setTiposProductos] = useState([]);
-  const [tipoProductoId, setTipoProductoId] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
-  const [opentp, setOpentp] = useState(false);
-  const [openetp, setOpenetp] = useState(false);
-  const [searchText, setSearchText] = useState('');
+  const [tipoProductoId, setTipoProductoId] = useState('');
 
   const listarp = async () => {
     try {
-      fetch('http://127.0.0.1:8000/producto/listarproductos/')
-        .then((response) => response.json())
-        .then((data) => setTiposProductos(data.tipos_productos))
-        .catch((error) => console.error('Error fetching tipos de productos:', error));
+      const response = await fetch('http://127.0.0.1:8000/producto/listarproductos/');
+      const data = await response.json();
+      setTiposProductos(data.tipos_productos);
     } catch (error) {
       message.error('Hubo un error al realizar la solicitud');
     } finally {
@@ -30,13 +24,23 @@ const TipoProducto = () => {
     listarp();
   }, []);
 
+  const handleCardClick = (id_tipoproducto) => {
+    setTipoProductoId(id_tipoproducto);
+  };
+
   const renderCards = () => {
-    return data.map((tipoProducto, index) => (
-      <Col key={index} md={8} lg={6} xl={4} style={{ marginBottom: '16px' }}>
+    return data.map((tipoProducto) => (
+      <Col key={tipoProducto.id_tipoproducto} md={5} style={{ marginBottom: '16px', margin: '0.5%', width: '100%' }}>
         <Card
-          hoverable
           title={tipoProducto.tpnombre}
-          style={{ borderLeft: `7px solid ${getColor(index)}`, borderRadius: '8px' }}
+          className={tipoProductoId === tipoProducto.id_tipoproducto ? 'selected-card' : 'card'}
+          style={{
+            borderLeft: `7px solid ${getColor(tipoProducto.id_tipoproducto)}`,
+            borderRadius: '8px',
+            height: '150px',
+            cursor: 'pointer',
+          }}
+          onClick={() => handleCardClick(tipoProducto.id_tipoproducto)}
         >
           <p>{tipoProducto.descripcion || 'Sin descripción'}</p>
         </Card>
@@ -44,15 +48,39 @@ const TipoProducto = () => {
     ));
   };
 
-  const getColor = (index) => {
-    const colors = ['#1890ff', '#f5222d', '#52c41a', '#faad14', '#722ed1']; 
-    return colors[index % colors.length];
+  const getColor = (id_tipoproducto) => {
+    const colors = ['#1890ff', '#f5222d', '#52c41a', '#faad14', '#722ed1'];
+    return colors[id_tipoproducto % colors.length];
   };
 
   return (
-    <Row gutter={[16, 16]}>
-      {renderCards()}
-    </Row>
+    <>
+      <Row>
+        <Col key={'all'} md={5} style={{ marginBottom: '16px', margin: '0.5%', width: '100%' }}>
+          <Card
+            hoverable
+            title='Tipos de productos'
+            className='card'
+            style={{
+              background: '#FDF2E1',
+              borderRadius: '8px',
+              height: '150px',
+              borderColor: tipoProductoId === '' ? '#1890ff' : '', // Establecer el color si está seleccionado
+            }}
+            onClick={() => handleCardClick('')}
+          >
+            <p>Todos los tipos</p>
+          </Card>
+        </Col>
+        {renderCards()}
+      </Row>
+      <Row>
+        <Col md={24}>
+          <Divider>Categorias</Divider>
+          <CategoriaCocina id_tipoproducto={tipoProductoId}></CategoriaCocina>
+        </Col>
+      </Row>
+    </>
   );
 };
 
