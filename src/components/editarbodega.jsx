@@ -64,9 +64,9 @@ const EditarBodegaForm = () => {
     };
 
     const handleCancelar = () => {
-        fetchData(currentPage);
-        setEditingProductId(null);
-        setInitialFormValues(null);
+        cargarBodegas(currentPage); // Reemplazado fetchData con cargarBodegas
+        setEditingBodega(null);
+        //setInitialFormValues(null); // Asegúrate de que setInitialFormValues esté definida
         setEditModalVisible(false);
     };
     
@@ -117,7 +117,7 @@ const EditarBodegaForm = () => {
         if (!editModalVisible) {
             cargarBodegas(currentPage);
         }
-    }, [bodegas]);
+    }, []);
 
     return (
         <div>
