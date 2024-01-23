@@ -5,7 +5,7 @@ import CrearBodegaForm from './crearbodega';
 import imgmesas from './res/imgmesas.png';
 
 const EditarBodegaForm = () => {
-    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [modalEditarVisible, setModalEditarVisible] = useState(false);
     const [bodegas, setBodegas] = useState([]);
     const [visible, setVisible] = useState(false);
     const [editingBodega, setEditingBodega] = useState(null);
@@ -14,14 +14,86 @@ const EditarBodegaForm = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [total, setTotal] = useState(0);
     const [openp, setOpenp] = useState(false);
-    const columns = [
+
+    const onClosep = () => {
+        setOpenp(false);
+    };
+
+    const Changueopcion = (value) => {
+        setSelectedOpcion(value);
+    };
+
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    const showDrawerp = () => {
+        setOpenp(true);
+    };
+
+    useEffect(() => {
+        cargarBodegas();
+    }, [currentPage]);
+
+    const mostrarModalEditar = bodega => {
+        setEditingBodega(bodega);
+        form.setFieldsValue({
+            nombrebog: bodega.nombrebog,
+            descripcion: bodega.descripcion,
+            id_sucursal: bodega.id_sucursal.toString(),
+        });
+        setModalEditarVisible(true);
+    };
+    
+    const manejarEdicion = async () => {
+        try {
+            const valores = await form.validateFields();
+            const idBodega = editingBodega.id_bodega; // Cambiado a id_bodega
+    
+            await fetch(`http://127.0.0.1:8000/bodega/editar/${idBodega}/`, {
+                method: 'POST',
+                body: new URLSearchParams({
+                    nombrebog: valores.nombrebog,
+                    descripcion: valores.descripcion,
+                    id_sucursal: valores.id_sucursal,
+                }),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
+    
+            // Actualizar la tabla después de la edición
+            cargarBodegas();
+            setModalEditarVisible(false);
+    
+            // Mostrar mensaje de éxito
+            message.success('Bodega editada exitosamente');
+        } catch (error) {
+            console.error('Error al editar la bodega:', error);
+            // Mostrar mensaje de error
+            message.error('Error al editar la bodega');
+        }
+    };
+
+    const cargarBodegas = async () => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/bodega/listar/?page=${currentPage}`);
+            const data = await response.json();
+            setBodegas(data.bodegas);
+            setTotal(data.total);
+        } catch (error) {
+            console.error('Error al obtener la lista de bodegas:', error);
+        }
+    };
+
+    const columnas = [
         {
-            title: 'ID de Sucursal',
+            title: 'Sucursal ID',
             dataIndex: 'id_sucursal',
             key: 'id_sucursal',
         },
         {
-            title: 'Nombre de la Bodega',
+            title: 'Nombre',
             dataIndex: 'nombrebog',
             key: 'nombrebog',
         },
@@ -32,92 +104,15 @@ const EditarBodegaForm = () => {
         },
         {
             title: 'Acciones',
+            dataIndex: 'acciones',
             key: 'acciones',
-            render: (text, record) => (
-                <Space size="middle">
-                    <Button onClick={() => handleEditar(record)}>Editar</Button>
-                </Space>
+            render: (_, bodega) => (
+                <Button type="primary" onClick={() => mostrarModalEditar(bodega)}>
+                    Editar
+                </Button>
             ),
         },
     ];
-    const onClosep = () => {
-        setOpenp(false);
-    };
-
-    const Changueopcion = (value) => {
-        setSelectedOpcion(value);
-    }
-
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
-
-    const showDrawerp = () => {
-        setOpenp(true);
-    };
-
-    const handleEditar = (record) => {
-        form.setFieldsValue(record);
-        setEditingBodega(record.id ? record : null);
-        setVisible(true);
-        setEditModalVisible(true);
-    };
-
-    const handleCancelar = () => {
-        fetchData(currentPage);
-        setEditingProductId(null);
-        setInitialFormValues(null);
-        setEditModalVisible(false);
-    };
-    
-    const handleGuardar = async () => {
-        try {
-            if (!editingBodega) {
-                console.error('No se ha seleccionado ninguna bodega para editar.');
-                return;
-            }
-
-            const values = await form.validateFields();
-            const response = await fetch(`http://127.0.0.1:8000/bodega/editar/${editingBodega.id}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(values),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                message.success(data.mensaje);
-                setVisible(false);
-                setEditingBodega(null);
-            } else {
-                const data = await response.json();
-                message.error(data.error || 'Error al editar la bodega');
-            }
-        } catch (error) {
-            console.error('Error al editar la bodega:', error);
-        }
-    };
-
-
-
-    const cargarBodegas = async () => {
-        try {
-            const response = await fetch('http://127.0.0.1:8000/bodega/listar/');
-            const data = await response.json();
-            setBodegas(data.bodegas);
-        } catch (error) {
-            console.error('Error al obtener la lista de bodegas:', error);
-        }
-    };
-
-    useEffect(() => {
-        form.resetFields();
-        if (!editModalVisible) {
-            cargarBodegas(currentPage);
-        }
-    }, [bodegas]);
 
     return (
         <div>
@@ -134,7 +129,7 @@ const EditarBodegaForm = () => {
                                     </Tooltip>
                                 ),
                                 value: 'Bodegas',
-                            }
+                            },
                         ]}
                         value={selectedOpcion}
                         onChange={Changueopcion}
@@ -150,21 +145,24 @@ const EditarBodegaForm = () => {
                         </Col>
                         <Col md={12}>
                             <Row>
-                                <Table columns={columns} dataSource={bodegas} rowKey="id" />
+                                <Table dataSource={bodegas} columns={columnas} rowKey="id_sucursal" />
+
                                 <Modal
                                     title="Editar Bodega"
-                                    visible={visible}
-                                    onCancel={handleCancelar}
-                                    onOk={handleGuardar}
-                                    okText="Guardar"
-                                    cancelText="Cancelar"
+                                    visible={modalEditarVisible}
+                                    onOk={manejarEdicion}
+                                    onCancel={() => setModalEditarVisible(false)}
                                 >
-                                    <Form form={form} layout="vertical">
-                                        <Form.Item label="Nombre de la Bodega" name="nombrebog">
+                                    <Form form={form}>
+                                        <Form.Item label="Nombre" name="nombrebog" rules={[{ required: true, message: 'Por favor, ingrese el nombre' }]}>
                                             <Input />
                                         </Form.Item>
-                                        <Form.Item label="Descripción" name="descripcion">
-                                            <Input.TextArea />
+                                        <Form.Item label="Descripción" name="descripcion" rules={[{ required: true, message: 'Por favor, ingrese la descripción' }]}>
+                                            <Input />
+                                        </Form.Item>
+                                        {/* Campo oculto para id_sucursal */}
+                                        <Form.Item name="id_sucursal" style={{ display: 'none' }}>
+                                            <Input type="hidden" />
                                         </Form.Item>
                                     </Form>
                                 </Modal>
