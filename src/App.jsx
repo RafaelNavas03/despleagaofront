@@ -18,7 +18,7 @@ import MapComponent from "./components/MapaUbicacion";
 import Carrusel from "./components/pruebaCarrusel";
 import MenuNavBar from "./components/MenuNavBar";
 import ProfileEditor from "./components/EditarUser";
-import LoginForm from "./components/Login";
+import LoginForm from "./components/login";
 import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
 import MenuCocina from "./components/menucocina";
