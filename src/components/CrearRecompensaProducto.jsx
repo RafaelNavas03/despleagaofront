@@ -49,7 +49,6 @@ const CrearRecompensaProductoForm = () => {
     try {
       setLoading(true);
 
-      // Convertir el valor del checkbox a 1 o 0
       values.sestado = values.sestado ? "1" : "0";
 
       const formData = new FormData();
@@ -69,7 +68,6 @@ const CrearRecompensaProductoForm = () => {
         message.success(responseData.mensaje);
         form.resetFields();
         
-        // Actualizar productosConRecompensas después de crear la recompensa
         const recompensasProductosResponse = await fetch('http://127.0.0.1:8000/Recompensas/listar_productos_con_recompensas/');
         const recompensasProductosData = await recompensasProductosResponse.json();
         

@@ -49,21 +49,18 @@ const EditarBodegaForm = () => {
   useEffect(() => {
     const obtenerListas = async () => {
       try {
-        // Obtener lista de proveedores
         const responseProveedores = await fetch(
           "http://127.0.0.1:8000/Proveedores/listar_proveedor/"
         );
         const dataProveedores = await responseProveedores.json();
         setProveedores(dataProveedores.proveedores);
 
-        // Obtener lista de componentes
         const responseComponentes = await fetch(
           "http://127.0.0.1:8000/producto/listarcomponentes/"
         );
         const dataComponentes = await responseComponentes.json();
         setComponentes(dataComponentes.componentes);
 
-        // Obtener lista de unidades de medida
         const responseUnidadesMedida = await fetch(
           "http://127.0.0.1:8000/producto/listarum/"
         );
@@ -134,7 +131,7 @@ const EditarBodegaForm = () => {
   const manejarEdicion = async () => {
     try {
       const valores = await form.validateFields();
-      const idBodega = editingBodega.id_bodega; // Cambiado a id_bodega
+      const idBodega = editingBodega.id_bodega;
 
       await fetch(`http://127.0.0.1:8000/bodega/editar/${idBodega}/`, {
         method: "POST",
@@ -148,15 +145,12 @@ const EditarBodegaForm = () => {
         },
       });
 
-      // Actualizar la tabla después de la edición
       cargarBodegas();
       setModalEditarVisible(false);
 
-      // Mostrar mensaje de éxito
       message.success("Bodega editada exitosamente");
     } catch (error) {
       console.error("Error al editar la bodega:", error);
-      // Mostrar mensaje de error
       message.error("Error al editar la bodega");
     }
   };
