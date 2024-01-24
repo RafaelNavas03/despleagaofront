@@ -1,8 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { Space, Table, Form, Card, Input, Pagination, Button, Select, Modal, Upload, Tooltip, Badge, Segmented, Avatar, Checkbox, notification, Drawer, Divider, Watermark, message } from 'antd';
-import { Row, Col } from 'react-bootstrap';
-import CrearBodegaForm from './crearbodega';
-import imgmesas from './res/imgmesas.png';
+import React, { useState, useEffect } from "react";
+import {
+  Space,
+  Table,
+  Form,
+  Card,
+  Input,
+  Pagination,
+  Button,
+  Select,
+  Modal,
+  Upload,
+  Tooltip,
+  Badge,
+  Segmented,
+  Avatar,
+  Checkbox,
+  notification,
+  Drawer,
+  Divider,
+  Watermark,
+  message,
+} from "antd";
+import { Row, Col } from "react-bootstrap";
+import CrearBodegaForm from "./crearbodega";
+import imgmesas from "./res/imgmesas.png";
+import RealizarPedido from "./pedidos";
 
 const EditarBodegaForm = () => {
   const [modalEditarVisible, setModalEditarVisible] = useState(false);
@@ -22,6 +44,8 @@ const EditarBodegaForm = () => {
   const [productos, setProductos] = useState([]);
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const detallesPedido = form.getFieldValue("detalles_pedido");
+  const [modalRealizarPedidoVisible, setModalRealizarPedidoVisible] =
+    useState(false);
 
   useEffect(() => {
     const obtenerListas = async () => {
@@ -72,27 +96,28 @@ const EditarBodegaForm = () => {
 
   const realizarPedido = async (bodega) => {
     setModalPedidoVisible(true);
+    setModalRealizarPedidoVisible(true);
   };
 
-    const onClosep = () => {
-        setOpenp(false);
-    };
+  const onClosep = () => {
+    setOpenp(false);
+  };
 
-    const Changueopcion = (value) => {
-        setSelectedOpcion(value);
-    };
+  const Changueopcion = (value) => {
+    setSelectedOpcion(value);
+  };
 
-    const handlePageChange = (page) => {
-        setCurrentPage(page);
-    };
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
-    const showDrawerp = () => {
-        setOpenp(true);
-    };
+  const showDrawerp = () => {
+    setOpenp(true);
+  };
 
-    useEffect(() => {
-        cargarBodegas();
-    }, [currentPage]);
+  useEffect(() => {
+    cargarBodegas();
+  }, [currentPage]);
 
   const mostrarModalEditar = (bodega) => {
     setEditingBodega(bodega);
@@ -138,118 +163,161 @@ const EditarBodegaForm = () => {
     }
   };
 
-    const cargarBodegas = async () => {
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/bodega/listar/?page=${currentPage}`);
-            const data = await response.json();
-            setBodegas(data.bodegas);
-            setTotal(data.total);
-        } catch (error) {
-            console.error('Error al obtener la lista de bodegas:', error);
-        }
-    };
+  const cargarBodegas = async () => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/bodega/listar/?page=${currentPage}`
+      );
+      const data = await response.json();
+      setBodegas(data.bodegas);
+      setTotal(data.total);
+    } catch (error) {
+      console.error("Error al obtener la lista de bodegas:", error);
+    }
+  };
 
-    const columnas = [
-        {
-            title: 'Sucursal ID',
-            dataIndex: 'id_sucursal',
-            key: 'id_sucursal',
-        },
-        {
-            title: 'Nombre',
-            dataIndex: 'nombrebog',
-            key: 'nombrebog',
-        },
-        {
-            title: 'Descripción',
-            dataIndex: 'descripcion',
-            key: 'descripcion',
-        },
-        {
-            title: 'Acciones',
-            dataIndex: 'acciones',
-            key: 'acciones',
-            render: (_, bodega) => (
-                <Button type="primary" onClick={() => mostrarModalEditar(bodega)}>
-                    Editar
-                </Button>
-            ),
-        },
-    ];
+  const columnas = [
+    {
+      title: "Sucursal ID",
+      dataIndex: "id_sucursal",
+      key: "id_sucursal",
+    },
+    {
+      title: "Nombre",
+      dataIndex: "nombrebog",
+      key: "nombrebog",
+    },
+    {
+      title: "Descripción",
+      dataIndex: "descripcion",
+      key: "descripcion",
+    },
+    {
+      title: "Acciones",
+      dataIndex: "acciones",
+      key: "acciones",
+      render: (_, bodega) => (
+        <Space>
+          <Button type="primary" onClick={() => mostrarModalEditar(bodega)}>
+            Editar
+          </Button>
+          <Button type="default" onClick={() => realizarPedido(bodega)}>
+            Realizar Pedidos
+          </Button>
+        </Space>
+      ),
+    },
+  ];
 
-    return (
-        <div>
-            <Row>
-                <Col md={12}>
-                    <Segmented
-                        options={[
-                            {
-                                label: (
-                                    <Tooltip title="Bodegas">
-                                        <div style={{ padding: 4 }}>
-                                            <Avatar shape="square" src={imgmesas} size="large" />
-                                        </div>
-                                    </Tooltip>
-                                ),
-                                value: 'Bodegas',
-                            },
-                        ]}
-                        value={selectedOpcion}
-                        onChange={Changueopcion}
-                    />
-                </Col>
-                {selectedOpcion === 'Bodegas' && (
-                    <>
-                        <Divider>Control bodegas</Divider>
-                        <Col md={12}>
-                            <Button type="primary" style={{ width: '100%', margin: '2%' }} onClick={showDrawerp}>
-                                Crear nueva bodega
-                            </Button>
-                        </Col>
-                        <Col md={12}>
-                            <Row>
-                                <Table dataSource={bodegas} columns={columnas} rowKey="id_sucursal" />
+  return (
+    <div>
+      <Row>
+        <Col md={12}>
+          <Segmented
+            options={[
+              {
+                label: (
+                  <Tooltip title="Bodegas">
+                    <div style={{ padding: 4 }}>
+                      <Avatar shape="square" src={imgmesas} size="large" />
+                    </div>
+                  </Tooltip>
+                ),
+                value: "Bodegas",
+              },
+            ]}
+            value={selectedOpcion}
+            onChange={Changueopcion}
+          />
+        </Col>
+        {selectedOpcion === "Bodegas" && (
+          <>
+            <Divider>Control bodegas</Divider>
+            <Col md={12}>
+              <Button
+                type="primary"
+                style={{ width: "100%", margin: "2%" }}
+                onClick={showDrawerp}
+              >
+                Crear nueva bodega
+              </Button>
+            </Col>
+            <Col md={12}>
+              <Row>
+                <Table
+                  dataSource={bodegas}
+                  columns={columnas}
+                  rowKey="id_sucursal"
+                />
 
-                                <Modal
-                                    title="Editar Bodega"
-                                    visible={modalEditarVisible}
-                                    onOk={manejarEdicion}
-                                    onCancel={() => setModalEditarVisible(false)}
-                                >
-                                    <Form form={form}>
-                                        <Form.Item label="Nombre" name="nombrebog" rules={[{ required: true, message: 'Por favor, ingrese el nombre' }]}>
-                                            <Input />
-                                        </Form.Item>
-                                        <Form.Item label="Descripción" name="descripcion" rules={[{ required: true, message: 'Por favor, ingrese la descripción' }]}>
-                                            <Input />
-                                        </Form.Item>
-                                        {/* Campo oculto para id_sucursal */}
-                                        <Form.Item name="id_sucursal" style={{ display: 'none' }}>
-                                            <Input type="hidden" />
-                                        </Form.Item>
-                                    </Form>
-                                </Modal>
-                            </Row>
-                            <Pagination current={currentPage} total={total} onChange={handlePageChange} pageSize={8} style={{ marginTop: '16px', textAlign: 'center' }} />
-                        </Col>
-                    </>
-                )}
-            </Row>
-            <Drawer
-                title="Crear Bodega"
-                width={720}
-                onClose={onClosep}
-                open={openp}
-                styles={{
-                    body: {
-                        paddingBottom: 80,
-                    },
-                }}
-            >
-                <CrearBodegaForm />
-            </Drawer>
-        </div>
-    );
+                <Modal
+                  title="Editar Bodega"
+                  visible={modalEditarVisible}
+                  onOk={manejarEdicion}
+                  onCancel={() => setModalEditarVisible(false)}
+                >
+                  <Form form={form}>
+                    <Form.Item
+                      label="Nombre"
+                      name="nombrebog"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Por favor, ingrese el nombre",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Form.Item
+                      label="Descripción"
+                      name="descripcion"
+                      rules={[
+                        {
+                          required: true,
+                          message: "Por favor, ingrese la descripción",
+                        },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    {/* Campo oculto para id_sucursal */}
+                    <Form.Item name="id_sucursal" style={{ display: "none" }}>
+                      <Input type="hidden" />
+                    </Form.Item>
+                  </Form>
+                </Modal>
+              </Row>
+              <Pagination
+                current={currentPage}
+                total={total}
+                onChange={handlePageChange}
+                pageSize={8}
+                style={{ marginTop: "16px", textAlign: "center" }}
+              />
+            </Col>
+          </>
+        )}
+      </Row>
+      <Drawer
+        title="Crear Bodega"
+        width={720}
+        onClose={onClosep}
+        open={openp}
+        styles={{
+          body: {
+            paddingBottom: 80,
+          },
+        }}
+      >
+        <CrearBodegaForm />
+      </Drawer>
+      <RealizarPedido
+        visible={modalRealizarPedidoVisible}
+        onClose={() => setModalRealizarPedidoVisible(false)}
+      />
+    </div>
+  );
 };
 
 export default EditarBodegaForm;
