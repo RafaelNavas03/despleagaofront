@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Checkbox, Drawer, Form, Input, Button, Row, Col, Divider, Pagination, Tooltip, Avatar } from 'antd';
+import { Card, Checkbox, Drawer, Form, Input, Button, Row, Col, Divider, Pagination } from 'antd';
 import { CheckCircleTwoTone, CloseCircleTwoTone } from '@ant-design/icons';
 import EditarRecompensaComboForm from './EditarRecompensaCombo';
 
@@ -14,20 +14,20 @@ const EditarRecompensaProductoForm = () => {
     const [total, setTotal] = useState(0);
     const [imgproductos, setImgProductos] = useState('');
 
-    useEffect(() => {
-        const fetchRecompensasProductos = async () => {
-            try {
-                const response = await fetch('http://127.0.0.1:8000/Recompensas/lista_recompensas_producto/');
-                if (!response.ok) {
-                    throw new Error('Error fetching recompensas de producto');
-                }
-                const data = await response.json();
-                setRecompensasProductos(data.recompensas_productos || []);
-            } catch (error) {
-                console.error('Error fetching recompensas de producto:', error);
+    const fetchRecompensasProductos = async () => {
+        try {
+            const response = await fetch('http://127.0.0.1:8000/Recompensas/lista_recompensas_producto/');
+            if (!response.ok) {
+                throw new Error('Error fetching recompensas de producto');
             }
-        };
+            const data = await response.json();
+            setRecompensasProductos(data.recompensas_productos || []);
+        } catch (error) {
+            console.error('Error fetching recompensas de producto:', error);
+        }
+    };
 
+    useEffect(() => {
         fetchRecompensasProductos();
     }, []);
 
@@ -78,6 +78,10 @@ const EditarRecompensaProductoForm = () => {
             if (!response.ok) {
                 throw new Error('Error updating recompensa de producto');
             }
+
+            // Recargar datos después de guardar
+            fetchRecompensasProductos();
+
             form.resetFields();
             setVisible(false);
         } catch (error) {
@@ -86,10 +90,7 @@ const EditarRecompensaProductoForm = () => {
     };
 
     const handlePageChange = (page) => {
-        // Update the current page
         setCurrentPage(page);
-        // Fetch data for the new page
-        // fetchRecompensasProductos(page);
     };
 
     return (

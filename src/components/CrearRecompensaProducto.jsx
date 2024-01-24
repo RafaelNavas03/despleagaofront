@@ -37,11 +37,13 @@ const CrearRecompensaProductoForm = () => {
     fetchData();
   }, []);  // Sin dependencias
 
-  const opcionesProductos = productos.map(producto => (
-    <Option key={producto.id_producto} value={producto.id_producto}>
-      {producto.nombreproducto}
-    </Option>
-  ));
+  const opcionesProductos = productos
+    .filter(producto => !productosConRecompensas.includes(producto.id_producto))  // Filtrar productos sin recompensas
+    .map(producto => (
+      <Option key={producto.id_producto} value={producto.id_producto}>
+        {producto.nombreproducto}
+      </Option>
+    ));
 
   const handleSubmit = async (values) => {
     try {

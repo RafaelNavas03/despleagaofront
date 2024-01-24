@@ -14,7 +14,7 @@ const CrearRecompensaComboForm = () => {
 
     const fetchData = async () => {
       try {
-        const combosResponse = await fetch('http://127.0.0.1:8000/combos/ver_combos/s');
+        const combosResponse = await fetch('http://127.0.0.1:8000/combos/ver_combos/');
         const recompensasCombosResponse = await fetch('http://127.0.0.1:8000/Recompensas/listar_combos_con_recompensas/');
         
         if (isMounted) {
@@ -49,7 +49,7 @@ const CrearRecompensaComboForm = () => {
 
   const opcionesCombos = combosFiltrados.map(combo => (
     <Option key={String(combo.id_combo)} value={String(combo.id_combo)}>
-      {combo.nombre_combo}
+      {combo.nombrecb}
     </Option>
   ));
 
