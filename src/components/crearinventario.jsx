@@ -235,6 +235,21 @@ const CrearInventario = () => {
           </Select>
         </Form.Item>
       )}
+      {isComponenteSelected && (
+        <Form.Item
+          name="id_um"
+          label="Unidad de Medida"
+          rules={[{ required: true, message: 'Por favor seleccione una unidad de medida' }]}
+        >
+          <Select placeholder="Seleccione una unidad de medida">
+            {unidadesMedida.map((um) => (
+              <Option key={um.id_um} value={um.id_um}>
+                {um.nombre_um}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
+      )}
       <Form.Item name="stock_minimo" label="Stock Mínimo" rules={[{ required: true, message: 'Por favor ingrese el stock mínimo' }]}>
         <Input type="number" />
       </Form.Item>
