@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Modal, Form, Input, message, Drawer, Popconfirm, Tooltip } from 'antd';
-import { UploadOutlined, EditTwoTone, DeleteFilled } from '@ant-design/icons';
+import { UploadOutlined, EditTwoTone, DeleteFilled, SettingOutlined } from '@ant-design/icons';
 import { Row, Col } from 'react-bootstrap';
 import CrearUnidadMedida from './CrearUM';
+import ConfigUM from './configurarum';
 
 const EditarUnidadesMedida = () => {
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const [selectedUnidad, setSelectedUnidad] = useState(null);
   const [editModalVisible, setEditModalVisible] = useState(false);
+  const [configModalVisible, setconfigModalVisible] = useState(false);
   const [openum, setOpenum] = useState(false);
   const [searchText, setSearchText] = useState('');
 
@@ -33,6 +35,13 @@ const EditarUnidadesMedida = () => {
   const openEditModal = (unidad) => {
     setSelectedUnidad(unidad);
     setEditModalVisible(true);
+  };
+  const openConfigtModal = (unidad) => {
+    setconfigModalVisible(true);
+  }
+  const closeConfigModal = () => {
+    setSelectedUnidad(null);
+    setconfigModalVisible(false);
   };
 
   const closeEditModal = () => {
@@ -168,6 +177,17 @@ const EditarUnidadesMedida = () => {
           />
         </Col>
       </Row>
+      <Row aling='rigth'>
+        <Tooltip title='Configurar conversiones de esta unidad de medida'>
+          <Button
+            type="link"
+            style={{ fontSize: '24px', marginLeft: 'auto' }}
+            icon={<SettingOutlined style={{ fontSize: '30px', color: '#eb2f96', marginLeft: '5%', border: '1px solid #eb2f96' }} />}
+            onClick={() => openConfigtModal()}
+          />
+        </Tooltip>
+      </Row>
+<br/>
       <Table dataSource={filteredUnidadesMedida} columns={columns} />
 
       <Modal
@@ -199,6 +219,16 @@ const EditarUnidadesMedida = () => {
       >
         <CrearUnidadMedida />
       </Drawer>
+
+      <Modal
+        title="Configurar conversiones de unidades de medida"
+        visible={configModalVisible}
+        onCancel={closeConfigModal}
+        footer={null}
+      >
+        <ConfigUM um={selectedUnidad}></ConfigUM>
+      </Modal>
+
     </div>
   );
 };
