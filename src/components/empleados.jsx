@@ -25,6 +25,7 @@ const Empleados = ({ }) => {
         setSelectedSucursal(0);
         setOpene(false);
         fetchData();
+        handleSucursalChange();
     };
 
     const showDrawere = () => {

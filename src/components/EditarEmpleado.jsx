@@ -161,7 +161,7 @@ const EditarEmpleado = ({ idsucur, oficio }) => {
                 )
             ))}
             <Drawer
-                title="Editar información de empresa"
+                title="Editar empleado"
                 width={720}
                 onClose={onClosee}
                 open={opene}

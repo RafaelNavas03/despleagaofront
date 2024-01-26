@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, message } from 'antd';
+import { Card, Row, Col, message, Drawer } from 'antd';
+import CocinaFuncion from './cocinamodel';
 
 const ProductosCocina = ({ idcategoria }) => {
     const [productosData, setProductos] = useState([]);
     const [componentesData, setComponentes] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null); // Estado para almacenar el producto o componente seleccionado
+    const [drawerVisible, setDrawerVisible] = useState(false); // Estado para controlar la visibilidad del Drawer
 
     const listarProductos = async () => {
         try {
-            // Obtener todos los productos de la API
             const responseProductos = await fetch('http://127.0.0.1:8000/producto/listar/');
             const data = await responseProductos.json();
 
@@ -16,7 +18,7 @@ const ProductosCocina = ({ idcategoria }) => {
                 const productosFiltrados = idcategoria
                     ? data.productos.filter(producto => producto.id_categoria === idcategoria)
                     : data.productos;
-                setProductos(productosFiltrados);  // Corregido: usar productosFiltrados en lugar de data.productos
+                setProductos(productosFiltrados);
             } else {
                 message.error('La respuesta de la API de productos no tiene el formato esperado.');
             }
@@ -34,7 +36,6 @@ const ProductosCocina = ({ idcategoria }) => {
             const data = await responseComponentes.json();
 
             if (data && Array.isArray(data.componentes)) {
-                console.log('categoria enviada:'+idcategoria);
                 const componentesFiltrados = idcategoria
                     ? data.componentes.filter(componente => componente.id_categoria.id_categoria === idcategoria)
                     : data.componentes;
@@ -52,15 +53,20 @@ const ProductosCocina = ({ idcategoria }) => {
     useEffect(() => {
         listarProductos();
         listarComponentes();
-    }, [idcategoria]); // No es necesario agregar dependencias
+    }, [idcategoria]);
 
     const renderCards = (data, isComponente) => {
         if (!Array.isArray(data)) {
-            return null; // o algún otro comportamiento por defecto
+            return null;
         }
-        
+
         return data.map((item, index) => (
-            <Col key={index} md={5} style={{ marginBottom: '16px', margin: '0.5%', width: '100%' }}>
+            <Col
+                key={index}
+                md={5}
+                style={{ marginBottom: '16px', margin: '0.5%', width: '100%', cursor: 'pointer' }}
+                onClick={() => handleItemClick(item)}
+            >
                 <Card
                     hoverable
                     title={item.nombre || item.nombreproducto}
@@ -73,6 +79,17 @@ const ProductosCocina = ({ idcategoria }) => {
         ));
     };
 
+    const handleItemClick = (item) => {
+        setSelectedItem(item);
+        console.log(item);
+        setDrawerVisible(true);
+    };
+
+    const handleDrawerClose = () => {
+        setSelectedItem(null);
+        setDrawerVisible(false);
+    };
+
     const getColor = (index) => {
         const colors = ['#722ed1', '#faad14', '#f5222d', '#52c41a', '#1890ff'];
         return colors[index % colors.length];
@@ -80,10 +97,24 @@ const ProductosCocina = ({ idcategoria }) => {
 
     return (
         <>
-            <Row>
+            <Row gutter={[16, 16]}>
                 {renderCards(productosData, false)}
                 {renderCards(componentesData, true)}
             </Row>
+
+            <Drawer
+                title={selectedItem ? selectedItem.nombre : 'Detalle del Producto/Componente'}
+                closable={true}
+                onClose={handleDrawerClose}
+                width={'75%'}
+                visible={drawerVisible}
+            >
+                {selectedItem && (
+                    <>
+                        <CocinaFuncion componente={selectedItem}></CocinaFuncion>
+                    </>
+                )}
+            </Drawer>
         </>
     );
 };
