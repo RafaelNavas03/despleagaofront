@@ -20,6 +20,7 @@ import imgaviso from "./res/imgaviso.png";
 import imgmesas from "./res/imgmesas.png";
 import imgcombos from "./res/imgcombos.png";
 import imgrecompensa from "./res/imgrecompensa.png";
+import imcocina from "./res/cocinar.png";
 import imgbodegas from "./res/imgbodegas.png";
 import imginventario from "./res/imginventario.png";
 import Empresa from "./Empresa";
@@ -51,6 +52,7 @@ const MenuG = () => {
   const tooltipTitle9 = "Agrega y gestiona las bodegas";
   const tooltipTitle10 = "Agrega y gestiona tus proveedores";
   const tooltipTitle11 = "Agrega y gestiona tus inventarios";
+  const tooltipTitle12 = "Prepara insumos y productos";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -77,6 +79,11 @@ const MenuG = () => {
     overflow: "hidden",
     textOverflow: "ellipsis",
     whiteSpace: "nowrap",
+  };
+
+  
+  const openNewWindow = () => {
+    window.open('/cocina', '_blank'); 
   };
 
   return (
@@ -365,6 +372,32 @@ const MenuG = () => {
                     onClick={() => handleCardClick("inventario")}
                   >
                     <Meta title={tooltipTitle11}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Cocina" color="#4CAF50">
+                <Tooltip title={tooltipTitle12}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    onClick={openNewWindow}
+                    cover={
+                      <Image
+                        alt="Cocina"
+                        src={imcocina}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                  >
+                    <Meta title={tooltipTitle12}></Meta>
                   </Card>
                 </Tooltip>
               </Badge.Ribbon>
