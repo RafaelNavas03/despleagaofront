@@ -44,6 +44,7 @@ const EditarBodegaForm = () => {
   const [productos, setProductos] = useState([]);
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const detallesPedido = form.getFieldValue("detalles_pedido");
+  const [BodegaEnv,setBodegaEnv]=useState('');
   const [modalRealizarPedidoVisible, setModalRealizarPedidoVisible] =
     useState(false);
 
@@ -95,6 +96,7 @@ const EditarBodegaForm = () => {
   }, []);
 
   const realizarPedido = async (bodega) => {
+    setBodegaEnv(bodega);
     setModalPedidoVisible(true);
     setModalRealizarPedidoVisible(true);
   };
@@ -202,7 +204,7 @@ const EditarBodegaForm = () => {
             Editar
           </Button>
           <Button type="default" onClick={() => realizarPedido(bodega)}>
-            Realizar Pedidos
+            Registrar inventario
           </Button>
         </Space>
       ),
@@ -244,12 +246,13 @@ const EditarBodegaForm = () => {
             </Col>
             <Col md={12}>
               <Row>
-                <Table
-                  dataSource={bodegas}
-                  columns={columnas}
-                  rowKey="id_sucursal"
-                />
-
+                <div className="table-responsive">
+                  <Table
+                    dataSource={bodegas}
+                    columns={columnas}
+                    rowKey="id_sucursal"
+                  />
+                </div>
                 <Modal
                   title="Editar Bodega"
                   visible={modalEditarVisible}
@@ -312,10 +315,14 @@ const EditarBodegaForm = () => {
       >
         <CrearBodegaForm />
       </Drawer>
-      <RealizarPedido
+      {BodegaEnv && (
+        <RealizarPedido
         visible={modalRealizarPedidoVisible}
+        bodega={BodegaEnv}
         onClose={() => setModalRealizarPedidoVisible(false)}
       />
+      ) }
+      
     </div>
   );
 };

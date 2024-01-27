@@ -1,24 +1,21 @@
 import React, { useState, useEffect } from "react";
-import {
-  Modal,
-  Button,
-  Form,
-  Select,
-  DatePicker,
-  Input,
-  InputNumber,
-  message,
-} from "antd";
+import { Modal, Button, Form, Select, InputNumber, Table, message, notification } from "antd";
 
 const { Option } = Select;
 
-const RealizarPedido = ({ visible, onClose }) => {
+const RealizarPedido = ({ visible, onClose, bodega }) => {
   const [proveedores, setProveedores] = useState([]);
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const [productos, setProductos] = useState([]);
   const [componentes, setComponentes] = useState([]);
   const [tipoSeleccionado, setTipoSeleccionado] = useState(null);
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
+  const [filteredData, setFilteredData] = useState([]);
+  const [categorias, setCategorias] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [categoriaId, setCategoriaId] = useState(null);
   const [form] = Form.useForm();
+  const [pedidoItems, setPedidoItems] = useState([]);
 
   useEffect(() => {
     const obtenerProveedores = async () => {
@@ -80,57 +77,249 @@ const RealizarPedido = ({ visible, onClose }) => {
 
   const handleTipoSeleccionadoChange = (value) => {
     setTipoSeleccionado(value);
-    form.setFieldsValue({
-      id_producto: undefined,
-      id_componente: undefined,
-    });
+    listarp(value === "producto" ? 1 : 2);
+  };
+
+  const listarp = async (id_tipoproducto) => {
+    setLoading(true);
+    try {
+      let url = 'http://127.0.0.1:8000/producto/listar_categorias/';
+
+      const responseCategorias = await fetch(url);
+      const data = await responseCategorias.json();
+
+      if (data && Array.isArray(data.categorias)) {
+        const categoriasFiltradas = id_tipoproducto
+          ? data.categorias.filter(
+            (categoria) =>
+              categoria.id_tipoproducto.id_tipoproducto === id_tipoproducto
+          )
+          : data.categorias;
+
+        setCategorias(data.categorias);
+        setCategoriaId(categoriasFiltradas[0]?.id_categoria);
+      } else {
+        message.error('La respuesta de la API no tiene el formato esperado.');
+      }
+    } catch (error) {
+      message.error('Hubo un error al realizar la solicitud' + error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filterData = () => {
+    if (tipoSeleccionado === "producto") {
+      return productos.filter((producto) =>
+        categoriaSeleccionada
+          ? producto.id_categoria === categoriaSeleccionada
+          : true
+      );
+    } else if (tipoSeleccionado === "componente") {
+      return componentes.filter((componente) =>
+        categoriaSeleccionada
+          ? componente.id_categoria.id_categoria === categoriaSeleccionada
+          : true
+      );
+    }
+    return [];
+  };
+
+  useEffect(() => {
+    setFilteredData(filterData());
+  }, [tipoSeleccionado, categoriaSeleccionada, productos, componentes]);
+
+  const columnp = [
+    { title: "ID", dataIndex: "id_producto", key: "id" },
+    {
+      title: "Nombre",
+      dataIndex: "nombreproducto",
+      key: "nombre",
+    },
+    { title: "Categoría", dataIndex: "categoria", key: "categoria" },
+  ];
+
+  const columnc = [
+    { title: "ID", dataIndex: "id_producto", key: "id" },
+    {
+      title: "Nombre",
+      dataIndex: "nombre",
+      key: "nombre",
+    },
+    { title: "Categoría", dataIndex: "categoria", key: "categoria" },
+  ];
+
+  const columnsPedidoItems = [
+    { title: "ID", dataIndex: "id", key: "id" },
+    {
+      title: "Nombre",
+      dataIndex: "nombre",
+      key: "nombre",
+    },
+    {
+      title: "Cantidad",
+      dataIndex: "cantidad",
+      key: "cantidad",
+      render: (text, record) => (
+        <InputNumber
+          min={1}
+          defaultValue={1}
+          onChange={(value) => handleCantidadChange(record, value)}
+        />
+      ),
+    },
+    {
+      title: "Costo",
+      dataIndex: "costo",
+      key: "costo",
+      render: (text, record) => (
+        <InputNumber
+          min={0}
+          step={0.01}
+          defaultValue={0}
+          onChange={(value) => handleCostoChange(record, value)}
+        />
+      ),
+    },
+    {
+      title: "Unidad de Medida",
+      dataIndex: "unidadMedida",
+      key: "unidadMedida",
+      render: (text, record) => (
+        <Select
+          style={{ width: "100%" }}
+          placeholder="Seleccione una unidad"
+          onChange={(value) => handleUnidadMedidaChange(record, value)}
+        >
+          {unidadesMedida.map((um) => (
+            <Option key={um.id_um} value={um.id_um}>
+              {um.nombre_um}
+            </Option>
+          ))}
+        </Select>
+      ),
+    },
+    {
+      title: "Tipo",
+      dataIndex: "tipo",
+      key: "tipo",
+      render: (text, record) => (
+        <span>{tipoSeleccionado === 'producto' ? "Producto" : "Componente"}</span>
+      ),
+    },
+  ];
+
+  const handleAgregarPedido = (record) => {
+    const exists = pedidoItems.some((item) => item.id === record.id_componente || item.id === record.id_producto);
+
+    if (!exists) {
+      const nuevoItem = {
+        id: tipoSeleccionado === 'componente' ? record.id_componente : record.id_producto,
+        nombre: tipoSeleccionado === 'componente' ? record.nombre : record.nombreproducto,
+        cantidad: 1,
+        costo: 0, // Valor predeterminado del costo
+        tipo: tipoSeleccionado,
+      };
+      setPedidoItems([...pedidoItems, nuevoItem]);
+    } else {
+      message.warning('El producto o componente ya ha sido agregado.');
+    }
+  };
+
+  const handleUnidadMedidaChange = (record, unidadMedida) => {
+    const index = pedidoItems.findIndex((item) => item.id === record.id);
+    if (index !== -1) {
+      const newPedidoItems = [...pedidoItems];
+      newPedidoItems[index].unidadMedida = unidadMedida;
+      setPedidoItems(newPedidoItems);
+    }
+  };
+
+  const handleCostoChange = (record, costo) => {
+    const index = pedidoItems.findIndex((item) => item.id === (tipoSeleccionado === 'componente' ? record.id_componente : record.id_producto));
+    if (index !== -1) {
+      const newPedidoItems = [...pedidoItems];
+      newPedidoItems[index].costo = costo;
+      setPedidoItems(newPedidoItems);
+    }
+  };
+  const handleCantidadChange = (record, cantidad) => {
+    const index = pedidoItems.findIndex((item) => item.id_producto === record.id_producto);
+    if (index !== -1) {
+      const newPedidoItems = [...pedidoItems];
+      newPedidoItems[index].cantidad = cantidad;
+      setPedidoItems(newPedidoItems);
+    }
+  };
+
+  const handlePedidoSubmit = async (values) => {
+    try {
+      // Construir el objeto detalles_pedido con los datos necesarios
+      const detalles_pedido = pedidoItems.map((item) => {
+        if (item.tipo == 'componente') {
+          return {
+            id_producto: '',
+            id_componente: item.id,
+            cantidad_pedido: item.cantidad,
+            costo_unitario: item.costo,
+            id_um: item.unidadMedida,
+            stock_minimo: 20,
+          };
+        }
+        if (item.tipo == 'producto') {
+          return {
+            id_producto: item.id,
+            id_componente: '',
+            cantidad_pedido: item.cantidad,
+            costo_unitario: item.costo,
+            id_um: item.unidadMedida,
+            stock_minimo: 20  // Ajusta el valor según tus necesidades
+          };
+        }
+      });
+      const formData = new FormData();
+      formData.append('id_proveedor', values.id_proveedor);
+      formData.append('fecha_pedido', values.fecha_pedido);
+      formData.append('fecha_entrega_esperada', values.fecha_entrega_esperada);
+      formData.append('observacion_pedido', values.observacion_pedido);
+      formData.append('detalles_pedido', JSON.stringify({ detalles_pedido }));
+      console.log('Bodega:');
+      console.log(bodega);
+      const response = await fetch('http://127.0.0.1:8000/Inventario/crearinventario/' + bodega.id_bodega + '/', {
+        method: 'POST',
+        body: formData,
+      });
+
+      // Manejar la respuesta de la API
+      if (response.ok) {
+        notification.success({
+          message: 'Éxito',
+          description: 'Inventario registrado exitosamente',
+      });
+        console.log(data.mensaje); // Imprimir la respuesta en la consola
+        onClose(); // Cerrar el modal u realizar otras acciones necesarias
+      } else {
+        const errorData = await response.json();
+        notification.error({
+          message: 'Éxito',
+          description: errorData.error,
+      });
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error('Error al enviar el pedido:' + error);
+      // Manejar el error, mostrar un mensaje al usuario, etc.
+    }
   };
 
   const onFinish = (values) => {
-    console.log("Detalles del Pedido:", values.detalles_pedido);
     handlePedidoSubmit(values);
     onClose();
   };
 
-  const realizarPedido = async (bodega) => {
-    setModalPedidoVisible(true);
-    setModalRealizarPedidoVisible(true);
-  };
-
-  const handlePedidoSubmit = async (pedidoData) => {
-    try {
-      const idBodega = bodega.id_bodega; // Obtener el ID de la bodega actual
-      const response = await fetch(
-        `http://127.0.0.1:8000/Inventario/crearinventario/${idBodega}/`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(pedidoData),
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        message.success(data.mensaje);
-      } else {
-        const data = await response.json();
-        message.error(data.error);
-      }
-
-      // Cerrar los modales después de enviar el pedido
-      setModalPedidoVisible(false);
-      setModalRealizarPedidoVisible(false);
-    } catch (error) {
-      console.error("Error al realizar el pedido:", error);
-      message.error("Error al realizar el pedido");
-    }
-  };
-
   return (
     <Modal
-      title="Realizar Pedido"
+      title="Registrar inventario"
       visible={visible}
       onCancel={onClose}
       footer={[
@@ -159,20 +348,8 @@ const RealizarPedido = ({ visible, onClose }) => {
             ))}
           </Select>
         </Form.Item>
-        <Form.Item label="Fecha del Pedido" name="fecha_pedido">
-          <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
-        </Form.Item>
-        <Form.Item
-          label="Fecha de Entrega Esperada"
-          name="fecha_entrega_esperada"
-        >
-          <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
-        </Form.Item>
-        <Form.Item
-          label="Tipo de Pedido"
-          name="tipo_pedido"
-          rules={[{ required: true, message: "Seleccione el tipo de pedido" }]}
-        >
+
+        <Form.Item label="Tipo de Pedido" name="tipo_pedido">
           <Select
             placeholder="Seleccione el tipo de pedido"
             onChange={handleTipoSeleccionadoChange}
@@ -181,108 +358,75 @@ const RealizarPedido = ({ visible, onClose }) => {
             <Option value="componente">Componente</Option>
           </Select>
         </Form.Item>
-        <Form.Item
-          label="Detalles del Pedido"
-          name="detalles_pedido"
-          rules={[
-            {
-              required: true,
-              message: "Ingrese al menos un detalle de pedido",
-              validator: (_, value) => {
-                if (!tipoSeleccionado) {
-                  return Promise.reject("Seleccione el tipo de pedido");
-                }
 
-                if (tipoSeleccionado === "producto" && !value?.id_producto) {
-                  return Promise.reject("Seleccione un producto");
-                }
-
-                if (
-                  tipoSeleccionado === "componente" &&
-                  !value?.id_componente
-                ) {
-                  return Promise.reject("Seleccione un componente");
-                }
-
-                return Promise.resolve();
-              },
-            },
-          ]}
-        >
-          {tipoSeleccionado === "producto" && (
-            <>
-              <Form.Item
-                label="Producto"
-                name="id_producto"
-                rules={[{ required: true, message: "Seleccione un producto" }]}
-              >
-                <Select placeholder="Seleccione un producto">
-                  {productos.map((producto) => (
-                    <Option
-                      key={producto.id_producto}
-                      value={producto.id_producto}
-                    >
-                      {producto.nombreproducto}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </>
-          )}
-          {tipoSeleccionado === "componente" && (
-            <>
-              <Form.Item
-                label="Componente"
-                name="id_componente"
-                rules={[
-                  { required: true, message: "Seleccione un componente" },
-                ]}
-              >
-                <Select placeholder="Seleccione un componente">
-                  {componentes.map((componente) => (
-                    <Option
-                      key={componente.id_componente}
-                      value={componente.id_componente}
-                    >
-                      {componente.nombre}
-                    </Option>
-                  ))}
-                </Select>
-              </Form.Item>
-            </>
-          )}
-          <Form.Item
-            label="Unidad de Medida"
-            name="id_um"
-            rules={[
-              { required: true, message: "Seleccione una unidad de medida" },
-            ]}
-          >
-            <Select placeholder="Seleccione una unidad de medida">
-              {unidadesMedida.map((um) => (
-                <Option key={um.id_um} value={um.id_um}>
-                  {um.nombre_um}
+        {tipoSeleccionado && (
+          <Form.Item label="Categoría" name="categoria_pedido">
+            <Select
+              placeholder="Seleccione una categoría"
+              onChange={(value) => setCategoriaSeleccionada(value)}
+            >
+              {categorias.map((categoria) => (
+                <Option
+                  key={categoria.id_categoria}
+                  value={categoria.id_categoria}
+                >
+                  {categoria.catnombre}
                 </Option>
               ))}
             </Select>
           </Form.Item>
-          <Form.Item
-            label="Cantidad"
-            name="cantidad_pedido"
-            rules={[{ required: true, message: "Ingrese la cantidad" }]}
-          >
-            <InputNumber min={1} />
-          </Form.Item>
-          <Form.Item
-            label="Costo Unitario"
-            name="costo_unitario"
-            rules={[{ required: true, message: "Ingrese el costo unitario" }]}
-          >
-            <InputNumber min={0} step={0.01} />
-          </Form.Item>{" "}
-        </Form.Item>
+        )}
+
+        {tipoSeleccionado === 'componente' && (
+          <Table
+            dataSource={filteredData}
+            columns={[
+              ...columnc,
+              {
+                title: "Agregar",
+                dataIndex: "id_producto",
+                key: "agregar",
+                render: (text, record) => (
+                  <Button type="primary" onClick={() => handleAgregarPedido(record)}>
+                    Agregar
+                  </Button>
+                ),
+              },
+            ]}
+            pagination={{ pageSize: 5 }}
+            rowKey="id"
+          />
+        )}
+        {tipoSeleccionado === 'producto' && (
+          <Table
+            dataSource={filteredData}
+            columns={[
+              ...columnp,
+              {
+                title: "Agregar",
+                dataIndex: "id_producto",
+                key: "agregar",
+                render: (text, record) => (
+                  <Button type="primary" onClick={() => handleAgregarPedido(record)}>
+                    Agregar
+                  </Button>
+                ),
+              },
+            ]}
+            pagination={{ pageSize: 5 }}
+            rowKey="id"
+          />
+        )}
+        <div className="table-responsive">
+          <Table
+            dataSource={pedidoItems}
+            columns={columnsPedidoItems}
+            pagination={false}
+            rowKey="id_producto"
+          />
+        </div>
       </Form>
-    </Modal>
+    </Modal >
   );
 };
 
