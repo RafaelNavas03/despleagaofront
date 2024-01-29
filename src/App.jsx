@@ -15,6 +15,9 @@ import {
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MapComponent from "./components/MapaUbicacion";
+//import Carrusel from "./components/pruebaCarrusel";
+//import MenuNavBar from "./components/MenuNavBar";
+//import ProfileEditor from "./components/EditarUser";
 import LoginForm from "./components/login";
 import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
@@ -25,6 +28,7 @@ import ListProductos from "./Clientes/ListaProductos";
 import ItemList from "./Clientes/item";
 import React, { useState } from 'react';
 import { ShoppingCartProvider } from './context/CarritoContext';
+import MostrarMesas from "./Clientes/Reserva";
 function App() {
   const {
     token: { colorBgContainer, borderRadiusLG },
@@ -61,6 +65,7 @@ function App() {
               <Route path="/Menu" element={<ListProductos/>} />
               <Route path="/pr" element={<ItemList/>} />
               <Route path="/Carrito" element={<ShoppingCart/>} />
+              <Route path="/Reservaciones" element={<MostrarMesas/>} />
               {/* Rutas para autenticación */}
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
               <Route path="/Registro" element={<RegisterForm />} />

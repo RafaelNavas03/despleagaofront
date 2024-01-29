@@ -73,7 +73,6 @@ const CocinaFuncion = ({ componente }) => {
                 return fetch('http://127.0.0.1:8000/producto/componentenecesario/', {
                     method: 'POST',
                     body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }, // Añade esta cabecera para indicar la solicitud htmx
                 })
                     .then(response => response.json())
                     .then(data => data.mensaje);
@@ -86,6 +85,7 @@ const CocinaFuncion = ({ componente }) => {
     };
 
     const handlePreparar = () => {
+        verificarcomponentes(cantidad);
         const haySuficientes = suficientes.every(result => result === 1);
 
         if (haySuficientes) {
