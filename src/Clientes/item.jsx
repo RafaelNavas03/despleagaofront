@@ -1,10 +1,10 @@
 import React from "react";
 import ProductList from "./pr";
-import { Navbar } from "./navbar2";
+import { Navbar2 } from "./navbar2";
 const ItemList = () => {
   return (
     <div className="items-list">
-        <Navbar/>
+        <Navbar2/>
       <ProductList />
     </div>
   );

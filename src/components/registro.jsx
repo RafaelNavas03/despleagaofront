@@ -319,8 +319,8 @@ const RegistroForm = () => {
         <Form.Item>
           <Link to={'/'}>
             <Button type="default" htmlType="button" style={{ width: '100%',
-                 backgroundColor: '#00245f',  // Color de fondo del botón
-                 color: '#ffffff',              // Color del texto del botón
+                 backgroundColor: '#00245f',  
+                 color: '#ffffff',            
                   }}>
               Iniciar sesión
             </Button>
