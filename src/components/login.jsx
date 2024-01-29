@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Alert, message } from "antd";
-import { Link } from "react-router-dom";
-import "../login.css";
+import { useNavigate } from 'react-router-dom';
+
 
 const LoginForm = ({ onLogin }) => {
   useEffect(() => {
@@ -58,10 +58,12 @@ const LoginForm = ({ onLogin }) => {
       console.log(data); // Verifica si el token está presente en la respuesta
   
       if (response.ok) {
-        const token = data.token;
-        console.log("Token almacenado:", token);
-  
-        localStorage.setItem("token", token);
+        const { token, nombreusuario  } = data;
+        console.log('Token almacenado:', token);
+        console.log('Nombre de usuario almacenado:', nombreusuario);
+
+        localStorage.setItem('token', token);
+        localStorage.setItem('username', nombreusuario);
         setTimeout(() => {
           localStorage.removeItem("token");
           console.log("Token eliminado después de 24 horas.");
@@ -104,62 +106,62 @@ const LoginForm = ({ onLogin }) => {
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+  const navigate = useNavigate();
 
+  const RedirigirRegistro = () => {
+    navigate('/Registro');
+  };
   return (
     <Form
-      name="loginForm"
-      initialValues={{ remember: true }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-      className="login-form-container"
-    >
-      <h2 className="login-form-title">Inicio de Sesión</h2>
-
-      <Form.Item
-        label="Usuario"
-        name="username"
-        rules={[{ required: true, message: "Por favor, ingresa tu usuario" }]}
+        name="loginForm"
+        initialValues={{ remember: true }}
+        onFinish={onFinish}
+        onFinishFailed={onFinishFailed}
+        className="max-w-md mx-auto bg-white rounded-lg"
       >
-        <Input />
-      </Form.Item>
-
-      <Form.Item
-        label="Contraseña"
-        name="password"
-        rules={[
-          { required: true, message: "Por favor, ingresa tu contraseña" },
-        ]}
-      >
-        <Input.Password />
-      </Form.Item>
-
-      <Form.Item>
-        <Button type="primary" htmlType="submit" className="login-form-button">
-          Iniciar sesión
-        </Button>
-      </Form.Item>
-
-      {/* Nuevo botón para registro */}
-      <Form.Item>
-        <Link to={"/registro"}>
-          <Button
-            type="default"
-            htmlType="button"
-            className="register-form-button"
-          >
-            Registrarse
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem', textAlign: 'center', color: '#333' }}
+        >Inicio de Sesión</h2>
+  
+        <Form.Item
+          label="Usuario"
+          name="username"
+          rules={[{ required: true, message: 'Por favor, ingresa tu usuario' }]}
+        >
+          <Input style={{ width: '100%', height: '40px' }}/>
+        </Form.Item>
+  
+        <Form.Item
+          label="Contraseña"
+          name="password"
+          rules={[{ required: true, message: 'Por favor, ingresa tu contraseña' }]}
+        >
+          <Input.Password style={{ width: '100%', height: '40px' }}/>
+        </Form.Item>
+  
+        <Form.Item>
+          <Button type="primary" htmlType="submit" style={{ width: '100%', background: '#1890ff' }}
+         >
+            Iniciar sesión
           </Button>
-        </Link>
-      </Form.Item>
-
-      {/* Mensaje invitando al registro */}
-      <Alert
-        message="¿No tienes cuenta? Regístrate para disfrutar de más funciones."
-        type="info"
-        showIcon
-        style={{ marginTop: "10px" }}
-      />
-    </Form>
+        </Form.Item>
+  
+        <Form.Item>
+        
+            <Button type="default" htmlType="button" style={{ width: '100%', background: '#f0f0f0'}}
+                   onClick={RedirigirRegistro}
+                    >
+              Registrarse
+            </Button>
+          
+        </Form.Item>
+  
+        <Alert
+          message="¿No tienes cuenta? Regístrate para disfrutar de más funciones."
+          type="info"
+          showIcon
+          style={{ marginTop: '1rem' }}
+        />
+      </Form>
   );
 };
 
