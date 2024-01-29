@@ -38,6 +38,7 @@ import Inventario from "./editarinventario.jsx";
 import CrearRecompensaProductoForm from "./CrearRecompensaProducto.jsx";
 import Recompensa from "./recompensa.jsx";
 import EditarRecompensaProductoForm from "./EditarRecompensaProducto.jsx";
+import EditarAvisos from "./editaravisos.jsx";
 
 const MenuG = () => {
   const { Meta } = Card;
@@ -214,6 +215,7 @@ const MenuG = () => {
                       />
                     }
                     className="text-center"
+                    onClick={() => handleCardClick("avisos")}
                   >
                     <Meta title={tooltipTitle4}></Meta>
                   </Card>
@@ -517,6 +519,16 @@ const MenuG = () => {
             <Row>
               <Col md={12}>
                 <Recompensa />
+              </Col>
+            </Row>
+          </>
+        )}
+        {currentPage == "avisos" && (
+          <>
+            <Divider>Avisos</Divider>
+            <Row>
+              <Col md={12}>
+                <EditarAvisos />
               </Col>
             </Row>
           </>

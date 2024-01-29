@@ -15,7 +15,14 @@ import {
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MapComponent from "./components/MapaUbicacion";
+<<<<<<< HEAD
 import LoginForm from "./components/login";
+=======
+import Carrusel from "./components/pruebaCarrusel";
+import MenuNavBar from "./components/MenuNavBar";
+import ProfileEditor from "./components/EditarUser";
+import LoginForm from "./components/Login";
+>>>>>>> 72fd3b2d624b69aca8345aebbb9398fddbad4f94
 import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
 import MenuCocina from "./components/menucocina";

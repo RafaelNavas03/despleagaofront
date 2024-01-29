@@ -235,7 +235,6 @@ const Mesas = () => {
       </Drawer>
     </div>
   );
-
 };
 
 export default Mesas;

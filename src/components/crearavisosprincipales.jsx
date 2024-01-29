@@ -7,17 +7,46 @@ const base64ToUrl = (base64String, mimeType) => {
   return `data:${mimeType};base64,${base64String}`;
 };
 
+// Función para redimensionar la imagen
+const resizeImage = (file, maxWidth, maxHeight) => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      const width = Math.min(maxWidth, img.width);
+      const height = Math.min(maxHeight, img.height);
+
+      canvas.width = width;
+      canvas.height = height;
+
+      ctx.drawImage(img, 0, 0, width, height);
+
+      canvas.toBlob((blob) => {
+        resolve(blob);
+      }, file.type);
+    };
+  });
+};
+
 const CrearAvisos = () => {
   const [form] = Form.useForm();
   const [avisos, setAvisos] = useState([]);
 
   const onFinish = async (values) => {
     const { titulo, descripcion, imagen } = values;
+
+    // Redimensionar la imagen antes de enviarla
+    const resizedImage = await resizeImage(imagen.file, 1050, 270);
+
     const formData = new FormData();
     formData.append('titulo', titulo);
     formData.append('descripcion', descripcion);
-    formData.append('imagen', imagen.file);
- 
+    formData.append('imagen', resizedImage);
+
     try {
       const response = await fetch('http://127.0.0.1:8000/avisos/crear/', {
         method: 'POST',
@@ -35,8 +64,34 @@ const CrearAvisos = () => {
       console.log(error);
       message.error('Error en la solicitud de creación de aviso');
     }
-
   };
+  const resizeImage = (file, targetWidth, targetHeight) => {
+    return new Promise((resolve) => {
+      const img = document.createElement('img');
+      img.src = URL.createObjectURL(file);
+  
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+  
+        canvas.width = targetWidth;
+        canvas.height = targetHeight;
+  
+        // Calcula el punto de inicio para el recorte centrado
+        const offsetX = (img.width - targetWidth) / 2;
+        const offsetY = (img.height - targetHeight) / 2;
+  
+        // Dibuja la imagen recortada en el lienzo
+        ctx.drawImage(img, offsetX, offsetY, targetWidth, targetHeight, 0, 0, targetWidth, targetHeight);
+  
+        canvas.toBlob((blob) => {
+          resolve(blob);
+        }, file.type);
+      };
+    });
+  };
+  
+
 
   const obtenerAvisos = async () => {
     try {
