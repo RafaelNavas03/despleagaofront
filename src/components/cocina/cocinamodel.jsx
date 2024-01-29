@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, message, InputNumber, Select, Button,Tag,notification } from 'antd';
+import { Card, Row, Col, message, InputNumber, Select, Button, Tag, notification } from 'antd';
 
 const { Option } = Select;
 
@@ -27,15 +27,15 @@ const CocinaFuncion = ({ componente }) => {
     }, []); // Se mueve la carga inicial de bodegas fuera del useEffect principal
 
     useEffect(() => {
-        verificarcomponentes();
+        verificarcomponentes(cantidad);
     }, [selectedItems, costoTotal, bodega]); // Agregamos bodega a las dependencias
 
     const handleBodega = (value) => {
         setBodega(value);
     };
     const handleCantidad = (value) => {
-        setCantidad(value);
-        verificarcomponentes();
+        setCantidad(value)
+        verificarcomponentes(value);
     };
 
     useEffect(() => {
@@ -55,10 +55,11 @@ const CocinaFuncion = ({ componente }) => {
         }
     };
 
-    const verificarcomponentes = () => {
+    const verificarcomponentes = (canti) => {
         console.log(selectedItems);
+        console.log('Cantidad enviada: ' + canti);
         if (selectedItems.length > 0 && bodega) {
-            console.log('Se envia bodeguita: '+ bodega);
+            console.log('Se envia bodeguita: ' + bodega);
             console.log(selectedItems);
             const promises = selectedItems.map(item => {
                 const formData = new FormData();
@@ -66,17 +67,18 @@ const CocinaFuncion = ({ componente }) => {
                 formData.append('cantxensamble', item.quantity);
                 formData.append('catngenensamble', componente.detalle.padrecant);
                 formData.append('id_componentegen', componente.id_componente);
-                formData.append('cantxfabricar', cantidad);
+                formData.append('cantxfabricar', canti);
                 formData.append('id_bodega', bodega); // Buscamos el id de la bodega
-
+    
                 return fetch('http://127.0.0.1:8000/producto/componentenecesario/', {
                     method: 'POST',
                     body: formData,
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }, // Añade esta cabecera para indicar la solicitud htmx
                 })
-                .then(response => response.json())
-                .then(data => data.mensaje);
+                    .then(response => response.json())
+                    .then(data => data.mensaje);
             });
-
+    
             Promise.all(promises)
                 .then(results => setSuficientes(results))
                 .catch(error => console.error('Error fetching inventory:', error));
@@ -84,7 +86,16 @@ const CocinaFuncion = ({ componente }) => {
     };
 
     const handlePreparar = () => {
-        prepareComponent();
+        const haySuficientes = suficientes.every(result => result === 1);
+
+        if (haySuficientes) {
+            prepareComponent();
+        } else {
+            notification.error({
+                message: 'Error',
+                description: 'Al menos un artículo no tiene suficiente disponibilidad',
+            });
+        }
     };
 
     const prepareComponent = () => {
@@ -99,21 +110,21 @@ const CocinaFuncion = ({ componente }) => {
             method: 'POST',
             body: formData,
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.mensaje === 'Operación exitosa') {
-                notification.success({
-                    message: 'Éxito',
-                    description: 'Preparando '+cantidad+' '+ componente.nombre+' en '+bodega,
-                });
-            } else {
-                notification.error({
-                    message: 'Éxito',
-                    description: 'Error en la operación',
-                });
-            }
-        })
-        .catch(error => console.error('Error preparing component:', error));
+            .then(response => response.json())
+            .then(data => {
+                if (data.mensaje === 'Operación exitosa') {
+                    notification.success({
+                        message: 'Éxito',
+                        description: 'Preparando ' + cantidad + ' ' + componente.nombre + ' en ' + bodega,
+                    });
+                } else {
+                    notification.error({
+                        message: 'Éxito',
+                        description: 'Error en la operación',
+                    });
+                }
+            })
+            .catch(error => console.error('Error preparing component:', error));
     };
 
     return (
