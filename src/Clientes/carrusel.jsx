@@ -24,7 +24,7 @@ const Carrusel=() =>{
   
   return (
     <>
-    <NavBar/>
+
     <div style={{ margin: '20px', borderRadius: '15px', overflow: 'hidden' }}>
   
     <Carousel fade>

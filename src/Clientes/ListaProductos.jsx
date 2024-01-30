@@ -55,6 +55,8 @@ const ListProductos =()=>{
         {
           id: products.id_producto,
           quantity: 1,
+          Name: selectedProduct.nombreproducto,
+          image: selectedProduct.imagenp,
           price: parseFloat(selectedProduct.preciounitario),
         },
       ];
@@ -87,13 +89,11 @@ const ListProductos =()=>{
 
     return(
         <>
-        <NavBar/>
-    
-        <div style={{ marginTop: '30px', marginLeft: '50px' }}>
-          {products.map((product) => (
+        <div style={{ marginTop: '30px', marginLeft: '50px', display:'flex' }}>
+          {products.map((product, index) => (
             <Card
               key={product.id}
-              style={{ width: '18rem', cursor: 'pointer' }}
+              style={{ width: '18rem', cursor: 'pointer', marginRight: index < products.length - 1 ? '20px' : '0' }}
               onClick={() => handleCardClick(product)}
             >
               <Card.Img
@@ -112,8 +112,8 @@ const ListProductos =()=>{
         </div>
   
         <Modal show={showModal} onHide={handleCloseModal}>
-          <Modal.Header closeButton>
-            <Modal.Title>{selectedProduct && selectedProduct.nombreproducto}</Modal.Title>
+          <Modal.Header style={{ borderBottom: 'none' }} closeButton>
+            <Modal.Title >{selectedProduct && selectedProduct.nombreproducto}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             {selectedProduct && (
@@ -127,24 +127,29 @@ const ListProductos =()=>{
                 <p>{`$${selectedProduct.preciounitario}`}</p>
 
 
-                <div style={{display:'flex'}}>
+                <div style={{display:'flex', justifyContent: 'center', alignItems: 'center' }}>
+
                         {quantityPerItem > 0 && (
-                          <div style={{padding:'10px'}}>{quantityPerItem}</div>
+                          <div style={{padding:'4px',backgroundColor: '#686868',  
+                        color: '#fff', borderRadius:'50px'}}>{quantityPerItem}</div>
                         )}
 
 
                         {quantityPerItem === 0 ? (
-                          <Button onClick={() => addToCart()}>
+                          <Button style={{border: 'none'}} onClick={() => addToCart()}>
                             + Añadir al carrito
                           </Button>
                         ) : (
-                          <Button  onClick={() => addToCart()}>
+                          <Button style={{marginLeft:'10px', backgroundColor: '#004e0e',  
+                          color: '#fff', border: 'none' }} onClick={() => addToCart()}>
                             + Añadir mas
                           </Button>
                         )}
 
                         {quantityPerItem > 0 && (
-                          <Button style={{marginLeft:'10px'}} onClick={() => removeItem()}>
+                          <Button style={{marginLeft:'10px',
+                          backgroundColor: '#e20000',  
+                          color: '#fff',border: 'none'}} onClick={() => removeItem()}>
                             - Quitar 
                           </Button>
                         )}
@@ -153,12 +158,6 @@ const ListProductos =()=>{
             )}
                  
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="secondary" onClick={handleCloseModal}>
-              Cerrar
-            </Button>
-          
-          </Modal.Footer>
         </Modal>
 
 

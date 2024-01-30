@@ -22,7 +22,7 @@ import LoginForm from "./components/login";
 import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
 import MenuCocina from "./components/menucocina";
-import Carrusel from "./Clientes/carrusel";
+import NavBar from "./Clientes/NavBar";
 import ShoppingCart from "./Clientes/shopingcart";
 import ListProductos from "./Clientes/ListaProductos";
 import ItemList from "./Clientes/item";
@@ -56,7 +56,7 @@ function App() {
           <ShoppingCartProvider>
             <Routes>
               {/* Ruta principal para mostrar Carrusel */}
-              <Route path="/" element={<Carrusel />} />
+              <Route path="/" element={<NavBar/>} />
 
               {/* Rutas para otras secciones */}
               <Route path="/Mapa" element={<MapComponent />} />

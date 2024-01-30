@@ -60,8 +60,8 @@ const RegistroForm = () => {
         showError(errorMessage);
       }
     } catch (error) {
-      showError('Error en la solicitud de inicio de sesión');
-      console.error('Error en la solicitud de inicio de sesión:', error);
+      showError('Error desconocido');
+      console.error('Error en la solicitud de registro:', error);
     }
   };
 
@@ -309,8 +309,8 @@ const RegistroForm = () => {
 
         <Form.Item>
           <Button type="primary" htmlType="submit" style={{ width: '100%', 
-                 backgroundColor: '#1890ff',  // Color de fondo del botón
-                 color: '#fff',              // Color del texto del botón
+                 backgroundColor: '#1890ff',  
+                 color: '#fff',             
                 }}>
             Registrarse
           </Button>
