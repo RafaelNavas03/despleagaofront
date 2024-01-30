@@ -27,7 +27,7 @@ import ShoppingCart from "./Clientes/shopingcart";
 import ListProductos from "./Clientes/ListaProductos";
 import ItemList from "./Clientes/item";
 import React, { useState } from 'react';
-import MenuMesero from "./components/Mesero/menu";
+import MenuMesero from "./components/Mesero/meseromenu";
 import { ShoppingCartProvider } from './context/CarritoContext';
 import MostrarMesas from "./Clientes/Reserva";
 function App() {
