@@ -15,9 +15,9 @@ import {
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import MapComponent from "./components/MapaUbicacion";
-import Carrusel from "./components/pruebaCarrusel";
-import MenuNavBar from "./components/MenuNavBar";
-import ProfileEditor from "./components/EditarUser";
+// import Carrusel from "./components/pruebaCarrusel";
+// import MenuNavBar from "./components/MenuNavBar";
+// import ProfileEditor from "./components/EditarUser";
 import LoginForm from "./components/login";
 import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
@@ -25,6 +25,7 @@ import MenuCocina from "./components/menucocina";
 import Carrusel from "./Clientes/carrusel";
 import ShoppingCart from "./Clientes/shopingcart";
 import React, { useState } from 'react';
+import MenuMesero from "./components/Mesero/menu";
 import { ShoppingCartProvider } from './context/CarritoContext';
 function App() {
   const {
@@ -60,6 +61,7 @@ function App() {
               <Route path="/home" element={<AdminMenu />} />
               <Route path="/cocina" element={<MenuCocina/>} />
               <Route path="/Carrito" element={<ShoppingCart/>} />
+              <Route path="/homemesero" element={<MenuMesero />} />
               {/* Rutas para autenticación */}
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
               <Route path="/Registro" element={<RegisterForm />} />
