@@ -62,6 +62,7 @@ function App() {
               {/* Rutas para otras secciones */}
               <Route path="/Mapa" element={<MapComponent />} />
               <Route path="/home" element={<AdminMenu />} />
+              <Route path="/homemesero" element={<MenuMesero />} />
               <Route path="/cocina" element={<MenuCocina/>} />
               <Route path="/Menu" element={<ListProductos/>} />
               <Route path="/pr" element={<ItemList/>} />
