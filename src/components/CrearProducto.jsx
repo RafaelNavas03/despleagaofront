@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { notification, Form, Input, Button, Upload, message, Select, Checkbox } from 'antd';
+import { notification, Form, Input, Button, Upload, message, Select, Checkbox,InputNumber } from 'antd';
 import { UploadOutlined } from '@ant-design/icons';
+import TransferContainer from './selectcomponent.jsx';
+import { Row, Col } from 'react-bootstrap';  // Importar el nuevo componente
 
 const CrearProducto = () => {
   const [form] = Form.useForm();
@@ -9,6 +11,7 @@ const CrearProducto = () => {
   const [unidadesMedida, setUnidadesMedida] = useState([]);
   const [fileList, setFileList] = useState([]);
   const [imagenP, setimagenP] = useState(null);
+  const [detallecomponente, setdetallecomponente] = useState(false);
   
 
   useEffect(() => {
@@ -49,6 +52,10 @@ const CrearProducto = () => {
     fetchUnidadesMedida();
   }, []);
 
+  const savedetalle = async (jsondetalle) => {
+    setdetallecomponente(jsondetalle);
+  }
+
   useEffect(() => {
     const imagenValue = form.getFieldValue('imagen_p');
     console.log(imagenValue);
@@ -79,6 +86,8 @@ const CrearProducto = () => {
       formData.append('irbpnr', values.irbpnr ? '1' : '0');
       console.log("Hay imagn?" + imagenP);
       formData.append('imagen_p', imagenP);
+      formData.append('detalle_comp', detallecomponente);
+      formData.append('cantidad', values.cantidad);
 
       const response = await fetch('http://127.0.0.1:8000/producto/crearproducto/', {
         method: 'POST',
@@ -220,6 +229,29 @@ const CrearProducto = () => {
           <Button icon={<UploadOutlined />}>Seleccionar Imagen</Button>
         </Upload>
       </Form.Item>
+      <Row>
+          <label>Cantidad generada a partir del ensamble</label>
+          <Col md={12}>
+            <Form.Item
+            label=':'
+              name="cantidad"
+              rules={[
+                { required: false },
+                { type: 'number', message: 'Por favor, ingrese un valor numérico válido para la cantidad' },
+              ]}
+            >
+              <InputNumber
+                step={0.01}
+                formatter={(value) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, '.')}
+                min={0}
+              />
+            </Form.Item>
+            <h6>Selecciona los artículos que ensamblan tu artículo</h6>
+            <div style={{ border: '1px solid #A4A4A4', padding: '2%', margin: '5%' }}>
+              <TransferContainer onValor={savedetalle} />
+            </div>
+          </Col>
+        </Row>
 
       <Form.Item wrapperCol={{ offset: 6, span: 14 }}>
         <Button type="primary" htmlType="submit" loading={loading}>
