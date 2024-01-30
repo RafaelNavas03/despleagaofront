@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Card, Input, Pagination, Button, Select, Modal, Upload, Tooltip, Badge,Tag, Segmented, Avatar, Checkbox,Popover,notification, Drawer, Divider, Watermark, message } from 'antd';
+import { Form, Card, Input, Pagination, Button, Select, Modal, Upload, Tooltip, Badge, Tag, Segmented, Avatar, Checkbox, Popover, notification, Drawer, Divider, Watermark, message } from 'antd';
 import { Row, Col } from 'react-bootstrap';
-import { UploadOutlined, CalendarTwoTone, EditFilled,EyeOutlined} from '@ant-design/icons';
+import { UploadOutlined, CalendarTwoTone, EditFilled, EyeOutlined } from '@ant-design/icons';
 import imgproductos from './res/imgproductos.png';
 import categoriaproducto from './res/categoriaproducto.png';
 import tipoproducto from './res/tipoproducto.png'
@@ -214,7 +214,6 @@ const EditarProducto = () => {
             const data = await response.json();
             setProductos(data.productos);
             setTotal(data.total);
-
         } catch (error) {
             console.error('Error fetching data:', error);
         }
@@ -252,6 +251,7 @@ const EditarProducto = () => {
 
     const handlePageChange = (page) => {
         setCurrentPage(page);
+        fetchproducto(page); // Llama a la función fetchproducto con la nueva página
     };
 
     const handleEditClick = (productId) => {
@@ -264,7 +264,7 @@ const EditarProducto = () => {
     };
 
     const handleCancelEdit = () => {
-        
+
         setEditingProductId(null);
         setInitialFormValues(null);
         setEditModalVisible(false);
@@ -566,6 +566,33 @@ const EditarProducto = () => {
                                                                             </Button>
                                                                         </Tooltip>
                                                                     </Col>
+                                                                    <Col md={4}>
+                                                                        <Tooltip
+                                                                            title='Ver componente'
+                                                                            overlayStyle={{ width: 300 }}
+                                                                        >
+                                                                            {producto.detalle && (
+                                                                                <Popover title={<Tag color="#000000">Ensamble de componente:</Tag>} trigger="click"
+                                                                                    content={
+                                                                                        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                                                                            <p>Generado por ensamble: {producto.detalle.padrecant}</p>
+                                                                                            <hr />
+                                                                                            {producto.detalle.detalle.map((detalleItem, index) => (
+                                                                                                <div key={index}>
+                                                                                                    <Tag color="#55971A">{detalleItem.id_componentehijo.nombre}</Tag>
+                                                                                                    <p>Cantidad: {detalleItem.cantidadhijo}</p>
+                                                                                                    <p>Unidad de Medida: {detalleItem.um.nombre}</p>
+                                                                                                    <hr />
+                                                                                                </div>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                    }>
+                                                                                    <Button icon={<EyeOutlined />} />
+                                                                                </Popover>
+                                                                            )}
+
+                                                                        </Tooltip>
+                                                                    </Col >
                                                                 </Row>
 
                                                             </Col>
@@ -592,7 +619,7 @@ const EditarProducto = () => {
                                 ))}
 
                             </Row>
-                            <Pagination current={currentPage} total={total} onChange={handlePageChange} pageSize={8} style={{ marginTop: '16px', textAlign: 'center' }} />
+                            <Pagination current={currentPage} total={20} onChange={handlePageChange} pageSize={10} style={{ marginTop: '16px', textAlign: 'center' }} />
                         </Col>
                     </>)}
                 {selectedOpcion === 'Categorias' && (

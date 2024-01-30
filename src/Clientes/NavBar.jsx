@@ -1,12 +1,26 @@
 
-import React, { useState } from 'react';
-import {Container, Nav ,Modal ,Navbar, NavDropdown} from 'react-bootstrap'
+import React, { useState,useContext} from 'react';
+import {Container, Nav ,Modal ,Navbar, NavDropdown, Row,
+  Col,Button} from 'react-bootstrap'
 import logo from '../assets/images/descargar.jpg'
 import LoginForm from '../components/login';
 import { Link } from 'react-router-dom';
 import RegistroForm from '../components/registro';
+import ShoppingCart from './shopingcart';
+import Carrusel from './carrusel';
+import { CartContext } from "../context/CarritoContext";
+import ListProductos from './ListaProductos';
+
 
 const NavBar =()=>{
+  const [cart, setCart] = useContext(CartContext);
+  const [ComponenteSeleccionado, setComponenteSeleccionado] = useState('Carrusel');
+
+
+  const quantity = cart.reduce((acc, curr) => {
+    return acc + curr.quantity;
+  }, 0);
+
 
     const navbarStyle = {
         backgroundColor: '#88b8df',  
@@ -48,14 +62,20 @@ const NavBar =()=>{
         setMostrarModal(true);
       };
 
-     
+      const MostrarComponente = (component) => {
+        setComponenteSeleccionado(component);
+      };
+    
+      const Regresar = () => {
+        setComponenteSeleccionado('Carrusel');
+      };
 
 
   return(
 <>
   <Navbar expand="lg" style={navbarStyle}>
     <Container>
-      <Navbar.Brand href="#home">
+      <Navbar.Brand >
       <img src={logo} alt="Logo" style={logoStyle} />
       Hamburguesas al carbon  
       </Navbar.Brand>
@@ -64,11 +84,11 @@ const NavBar =()=>{
     <Container>
     <Navbar.Collapse className="justify-content-end">
         <Nav className="ml-auto">
-          <Nav.Link href="/Menu">Menú</Nav.Link>
-          {Logeado &&<NavDropdown title="Perfil" style={{ marginLeft: 'auto', fontSize: '16px' }}>
+          <Nav.Link onClick={() => MostrarComponente('Menu')}>Menú</Nav.Link>
+          {Logeado &&<NavDropdown title="Perfil">
               <NavDropdown.Item href="/Perfil" style={{marginLeft: 'auto', fontSize: '14px' }}>Ver perfil</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="#action/3.4" style={{ fontSize: '14px' }}>
+              <NavDropdown.Item onClick={()=> setLogeado(false)} style={{ fontSize: '14px' }}>
                 Cerrar sesion
               </NavDropdown.Item>
             </NavDropdown>}
@@ -76,15 +96,42 @@ const NavBar =()=>{
        
           {Logeado && <Nav.Link>Puntos</Nav.Link>}
 
-          {Logeado && <Nav.Link href="/Carrito">Carrito</Nav.Link>}
-         
+          {Logeado && <Link style={{ textDecoration: 'none', color: 'inherit' }}
+          onClick={() => MostrarComponente('Carrito')}> <Nav.Link to="/Carrito">Carrito: 
+          <span>{quantity}</span></Nav.Link></Link>}
+
+          
           {!Logeado && <Nav.Link onClick={HacerClick}>Iniciar sesión</Nav.Link>}
     
         </Nav>
       </Navbar.Collapse>
     </Container>
   </Navbar>
-
+<div>
+  {ComponenteSeleccionado === 'Carrusel' && <Carrusel/>}
+  {ComponenteSeleccionado === 'Menu' && <ListProductos/>}
+  {ComponenteSeleccionado === 'Carrito' && <ShoppingCart />}
+  {ComponenteSeleccionado != 'Carrusel' && (
+    
+              <Row>
+                <Col md={12}>
+                  <Button
+                    variant="success"
+                    style={{
+                      position: "fixed",
+                      right: "16px",
+                      bottom: "16px",
+                      zIndex: 1000,
+                    }}
+                    onClick={() => Regresar()}
+                  >
+                    Atrás
+                  </Button>
+                </Col>
+              </Row>
+                
+  )}
+</div>
      {/* Modal */}
      <Modal show={MostrarModal} onHide={CerrarModal}>
         <Modal.Header closeButton  style={{ borderBottom: 'none' }}>
