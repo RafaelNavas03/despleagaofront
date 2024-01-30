@@ -244,8 +244,12 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
     }
   };
   const handleCantidadChange = (record, cantidad) => {
-    const index = pedidoItems.findIndex((item) => item.id_producto === record.id_producto);
+    console.log('Enviando cantidad: '+cantidad)
+    console.log(record);
+    console.log(pedidoItems);
+    const index = pedidoItems.findIndex((item) => item.id === record.id);
     if (index !== -1) {
+      console.log('Index: '+index)
       const newPedidoItems = [...pedidoItems];
       newPedidoItems[index].cantidad = cantidad;
       setPedidoItems(newPedidoItems);
@@ -277,6 +281,8 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
           };
         }
       });
+      console.log('Lo que se solicita:');
+      console.log(detalles_pedido);
       const formData = new FormData();
       formData.append('id_proveedor', values.id_proveedor);
       formData.append('fecha_pedido', values.fecha_pedido);
