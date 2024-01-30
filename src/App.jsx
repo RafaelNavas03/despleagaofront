@@ -22,7 +22,7 @@ import LoginForm from "./components/login";
 import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
 import MenuCocina from "./components/menucocina";
-//import Carrusel from "./Clientes/carrusel";
+import Carrusel from "./Clientes/carrusel";
 import ShoppingCart from "./Clientes/shopingcart";
 import ListProductos from "./Clientes/ListaProductos";
 import ItemList from "./Clientes/item";
