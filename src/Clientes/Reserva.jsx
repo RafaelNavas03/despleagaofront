@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Row, Col, Pagination, DatePicker, Select, Space, Modal, Button } from 'antd';
+import { Card, Row, Col, Pagination, DatePicker, Select, Space, Modal, Button, message } from 'antd';
 
 const { Option } = Select;
 
-const MostrarMesas = () => {
+const Reserva = () => {
   const [mesas, setMesas] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedMesa, setSelectedMesa] = useState(null);
@@ -52,14 +52,24 @@ const MostrarMesas = () => {
     setModalVisible(false);
   };
 
-  const handleReserveClick = () => {
-    // Agrega lógica para realizar la reserva aquí
-    console.log('Reservar mesa', selectedMesa.id_mesa);
-    console.log('Fecha seleccionada', selectedDate && selectedDate.format('YYYY-MM-DD'));
-    console.log('Hora seleccionada', selectedHour);
+  const handleReserveClick = async () => {
+    try {
+      if (!selectedMesa || !selectedDate || !selectedHour) {
+        throw new Error('Por favor, seleccione una mesa, fecha y hora válidas.');
+      }
 
-    // Cerrar el modal después de la reserva
-    setModalVisible(false);
+      // Agrega lógica para realizar la reserva aquí
+      console.log('Reservar mesa', selectedMesa.id_mesa);
+      console.log('Fecha seleccionada', selectedDate.format('YYYY-MM-DD'));
+      console.log('Hora seleccionada', selectedHour);
+
+      // Cerrar el modal después de la reserva
+      setModalVisible(false);
+      message.success('Reservación creada con éxito');
+    } catch (error) {
+      console.error('Error al crear la reserva:', error);
+      message.error('Error al crear la reserva: ' + error.message);
+    }
   };
 
   const paginatedMesas = mesas.slice((currentPage - 1) * pageSize, currentPage * pageSize);
@@ -117,4 +127,4 @@ const MostrarMesas = () => {
   );
 };
 
-export default MostrarMesas;
+export default Reserva;

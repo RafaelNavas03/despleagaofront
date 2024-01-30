@@ -72,7 +72,7 @@ const NavBar =()=>{
                 Cerrar sesion
               </NavDropdown.Item>
             </NavDropdown>}
-          {Logeado && <Nav.Link href="/Reservaciones">Reservaciones</Nav.Link>}
+          {Logeado && <Nav.Link href="/Reserva">Reservaciones</Nav.Link>}
        
           {Logeado && <Nav.Link>Puntos</Nav.Link>}
 
