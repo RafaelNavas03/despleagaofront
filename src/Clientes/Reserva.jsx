@@ -36,6 +36,7 @@ const Reserva = () => {
   };
 
   const handleCardClick = (mesa) => {
+    console.log('Mesa seleccionada:', mesa.id_mesa);
     setSelectedMesa(mesa);
     setModalVisible(true);
   };
@@ -58,12 +59,25 @@ const Reserva = () => {
         throw new Error('Por favor, seleccione una mesa, fecha y hora válidas.');
       }
 
-      // Agrega lógica para realizar la reserva aquí
-      console.log('Reservar mesa', selectedMesa.id_mesa);
-      console.log('Fecha seleccionada', selectedDate.format('YYYY-MM-DD'));
-      console.log('Hora seleccionada', selectedHour);
+      const formData = new FormData();
+      formData.append('id_cliente', '1');
+      formData.append('id_mesa', selectedMesa.id_mesa);
+      formData.append('fecha_reserva', selectedDate && selectedDate.format('YYYY-MM-DD'));
+      formData.append('hora_reserva', selectedHour);
+      formData.append('estado', 'E');  // Ajusta el estado según tus necesidades
 
-      // Cerrar el modal después de la reserva
+      const response = await fetch('http://127.0.0.1:8000/Mesas/crear_reservacion/', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al crear la reserva');
+      }
+
+      // Cerrar el modal después de la reserva exitosa
       setModalVisible(false);
       message.success('Reservación creada con éxito');
     } catch (error) {
@@ -82,10 +96,8 @@ const Reserva = () => {
       <Row gutter={16}>
         {paginatedMesas.map((mesa) => (
           <Col key={mesa.id_mesa} xs={24} sm={colSize} md={colSize} lg={colSize} style={{ marginBottom: '16px' }}>
-            <Card title={`Mesa ${mesa.id_mesa}`} onClick={() => handleCardClick(mesa)}>
+            <Card title={`Mesa ${mesa.id_mesa}`&&`${mesa.observacion}`} onClick={() => handleCardClick(mesa)}>
               <p>Observación: {mesa.observacion}</p>
-              <p>Estado: {mesa.estado}</p>
-              <p>Activa: {mesa.activa === '1' ? 'Sí' : 'No'}</p>
               <p>Máx. Personas: {mesa.max_personas}</p>
             </Card>
           </Col>
@@ -115,9 +127,9 @@ const Reserva = () => {
         <Space direction="vertical" style={{ width: '100%' }}>
           <DatePicker onChange={handleDateChange} placeholder="Seleccione una fecha" style={{ marginBottom: '8px' }} />
           <Select onChange={handleHourChange} placeholder="Seleccione una hora" style={{ width: '100%', marginBottom: '16px' }}>
-            <Option value="09:00">09:00 AM</Option>
-            <Option value="12:00">12:00 PM</Option>
-            <Option value="18:00">06:00 PM</Option>
+            <Option value="09:00">09:00</Option>
+            <Option value="12:00">12:00</Option>
+            <Option value="18:00">06:00</Option>
           </Select>
           <p>Fecha seleccionada: {selectedDate && selectedDate.format('YYYY-MM-DD')}</p>
           <p>Hora seleccionada: {selectedHour}</p>
