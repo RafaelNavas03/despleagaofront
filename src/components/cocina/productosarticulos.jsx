@@ -15,10 +15,12 @@ const ProductosCocina = ({ idcategoria }) => {
             const data = await responseProductos.json();
 
             if (data && Array.isArray(data.productos)) {
-                const productosFiltrados = idcategoria
-                    ? data.productos.filter(producto => producto.id_categoria === idcategoria)
-                    : data.productos;
-                setProductos(productosFiltrados);
+                const productosFiltrados = data.productos.filter(producto => producto.detalle);
+
+                // Filtrar por categoría si se proporciona
+                const productosCategoria = idcategoria ? productosFiltrados.filter(producto => producto.id_categoria === idcategoria) : productosFiltrados;
+
+                setProductos(productosCategoria);
             } else {
                 message.error('La respuesta de la API de productos no tiene el formato esperado.');
             }
@@ -81,6 +83,7 @@ const ProductosCocina = ({ idcategoria }) => {
 
     const handleItemClick = (item) => {
         setSelectedItem(item);
+        console.log('Item');
         console.log(item);
         setDrawerVisible(true);
     };
@@ -109,9 +112,14 @@ const ProductosCocina = ({ idcategoria }) => {
                 width={'75%'}
                 visible={drawerVisible}
             >
-                {selectedItem && (
+                {selectedItem && selectedItem.id_componente && (
                     <>
                         <CocinaFuncion componente={selectedItem}></CocinaFuncion>
+                    </>
+                )}
+                {selectedItem && selectedItem.id_producto && (
+                    <>
+                        <CocinaFuncion producto={selectedItem}></CocinaFuncion>
                     </>
                 )}
             </Drawer>
