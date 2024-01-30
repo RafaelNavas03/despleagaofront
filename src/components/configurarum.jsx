@@ -32,7 +32,7 @@ const ConfigUM = () => {
     try {
       const respuestaConversiones = await fetch('http://127.0.0.1:8000/producto/conversionesum/');
       if (!respuestaConversiones.ok) {
-        throw new Error('Error al obtener las conversiones');
+        console.error(respuestaConversiones.error);
       }
       const datosConversiones = await respuestaConversiones.json();
       setConversiones(datosConversiones.conversiones);
@@ -74,7 +74,7 @@ const ConfigUM = () => {
       });
 
       if (!respuestaConfiguracion.ok) {
-        message.error('Error al configurar la conversión'+error);
+        message.error('Error al configurar la conversión'+respuestaConfiguracion.error);
       }else{
         message.success('Conversión configurada con éxito');
       }
