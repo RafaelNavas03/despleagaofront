@@ -2,13 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { UserOutlined } from '@ant-design/icons';
 import { Layout, Menu, Image, Avatar, Card, Badge, Watermark } from 'antd';
 import { Container, Row, Col, Button, Form, Nav, Navbar, NavDropdown, Dropdown, Offcanvas } from 'react-bootstrap';
-import MenuMesero from './menu';
+import MenuM from './menu';
 
 const { Sider, Content } = Layout;
 const { SubMenu } = Menu;
 const { Meta } = Card;
 
-const AdminMenu = () => {
+const MenuMesero = () => {
     const [collapsed, setCollapsed] = useState(false);
     const [selectedSubMenu, setSelectedSubMenu] = useState(null);
     const [empresaInfo, setEmpresaInfo] = useState(null);
@@ -107,7 +107,7 @@ const AdminMenu = () => {
             <div style={{ backgroundColor: '#DBE3E3', padding: '0.5%' }}>
                 <Navbar expand="lg" style={{ backgroundColor: '#4CAF50', color: '#fff', borderRadius: '10px' }}>
                     <Container fluid>
-                        <Navbar.Brand href="/home">
+                        <Navbar.Brand href="/homemesero">
                             {empresaInfo && empresaInfo.elogo && (
                                 <img src={`data:image/png;base64,${empresaInfo.elogo}`} width={50} style={{ borderRadius: '50%' }} />
                             )}
@@ -184,7 +184,7 @@ const AdminMenu = () => {
                             style={{ height: '96%', width: '100%', margin: '16px', marginLeft: '2px', marginBottom: '16px', cursor: 'default' }}
                             className="text-center"
                         >
-                            <MenuMesero />
+                            <MenuM />
                         </Card>
                     </Col>
                 </Row>
@@ -194,4 +194,4 @@ const AdminMenu = () => {
     );
 };
 
-export default AdminMenu;
+export default MenuMesero;

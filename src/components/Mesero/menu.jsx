@@ -15,7 +15,7 @@ import {
 } from "react-bootstrap";
 import imgtomarpedido from "./res/imgtomarpedido.png";
 
-const MenuMesero = () => {
+const MenuM = () => {
   const { Meta } = Card;
   const tooltipTitle = "Realiza pedidos a las mesas";
 
@@ -98,4 +98,4 @@ const MenuMesero = () => {
   );
 };
 
-export default MenuMesero;
+export default MenuM;
