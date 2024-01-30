@@ -13,6 +13,7 @@ import EditarUnidadesMedida from './editarunidadmedida';
 import CrearHorariosSemanales from './crearhorarioS';
 import articulo from './res/articulos.png'
 import EditarComponenteForm from './EditarComponente'
+import ListProductos from '../Clientes/ListaProductos';
 
 const { Meta } = Card;
 const { Option } = Select;
@@ -179,6 +180,7 @@ const EditarProducto = () => {
                     message: 'Éxito',
                     description: 'Horario editado exitosamente',
                 });
+                fetchproducto(currentPage);
             } else {
                 notification.error({
                     message: 'Error',
@@ -253,17 +255,20 @@ const EditarProducto = () => {
     };
 
     const handleEditClick = (productId) => {
-        a
+        console.log('Sucede');
         const productoToEdit = productos.find((producto) => producto.id_producto === productId.id_producto);
         setEditingProductId(productId.id_producto);
         setInitialFormValues(productoToEdit);
         setEditModalVisible(true);
+        fetchproducto(currentPage);
     };
 
     const handleCancelEdit = () => {
+        
         setEditingProductId(null);
         setInitialFormValues(null);
         setEditModalVisible(false);
+        fetchproducto(currentPage);
     };
 
     const validateImageFormat = (_, fileList) => {
@@ -370,7 +375,7 @@ const EditarProducto = () => {
                 </Form.Item>
 
                 <Form.Item label="Puntos" name="puntosp" initialValue={producto.puntosp}>
-                    <Input />
+                    <Input type="number" />
                 </Form.Item>
 
                 <Form.Item

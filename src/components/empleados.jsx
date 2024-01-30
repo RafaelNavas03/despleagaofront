@@ -24,8 +24,6 @@ const Empleados = ({ }) => {
         setSelectedOficio('Administradores');
         setSelectedSucursal(0);
         setOpene(false);
-        fetchData();
-        handleSucursalChange();
     };
 
     const showDrawere = () => {
@@ -35,6 +33,11 @@ const Empleados = ({ }) => {
 
 
     useEffect(() => {
+        Sucursallistar();
+        handleSucursalChange();
+    }, []);
+
+    const Sucursallistar = () =>{
         fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/')
             .then((response) => response.json())
             .then((data) => {
@@ -47,7 +50,7 @@ const Empleados = ({ }) => {
             .finally(() => {
                 setLoadingSucursales(false);
             });
-    }, []);
+    }
 
     const handleOficioChange = (value) => {
         if (value == 'agregar') {
@@ -56,7 +59,16 @@ const Empleados = ({ }) => {
         }
         setSelectedOficio(value);
     };
-
+    const listarEmpleados=() =>{
+        fetch(`http://127.0.0.1:8000/empleado/listar-empleados/0/`)
+        .then((response) => response.json())
+        .then((data) => {
+            setEmpleados(data.empleados);
+        })
+        .catch((error) => {
+            console.error('Error fetching empleados:', error);
+        });
+    }
     const handleSucursalChange = (value) => {
         console.log('ID de la sucursal seleccionada:', value);
 

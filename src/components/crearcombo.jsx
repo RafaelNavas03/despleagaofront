@@ -112,12 +112,11 @@ const NuevoComboForm = () => {
 
     const onFinishProductos = async () => {
         try {
+            console.log('A ver que pasa: '+comboForm);
+            console.log('A ver que pasa: '+comboForm.getFieldValue('nombrecb'));
+            console.log('A ver que pasa: '+comboForm.getFieldValue('puntoscb'));
             const isValid = await comboForm.validateFields();
-
             const formData = new FormData();
-
-            console.log("veamos que pasa: " + comboForm.getFieldValue('nombrecb'));
-
             formData.append('id_cat_combo', categoriaSeleccionada);
             formData.append('descripcion_combo', comboForm.getFieldValue('descripcion_combo'));
             formData.append('nombre_cb', comboForm.getFieldValue('nombrecb'));
@@ -262,6 +261,7 @@ const NuevoComboForm = () => {
             <Form
                 form={comboForm}
                 name="encabezadoCombo"
+                initialValues={{ puntoscb: 0 }}
                 onFinish={onFinishProductos}
                 onFinishFailed={(errorInfo) => {
                     console.log('Failed:', errorInfo);
@@ -294,7 +294,6 @@ const NuevoComboForm = () => {
                 >
                     <Input />
                 </Form.Item>
-
                 <Form.Item
                     name="descripcion_combo"
                     label="Descripcion"
@@ -333,7 +332,7 @@ const NuevoComboForm = () => {
                 </Form.Item>
                 <Form.Item
                     name="puntoscb"
-                    label="Puntos del Combo"
+                    label="Puntos del Combo" 
                     rules={[
                         {
                             validator: async (_, value) => {
@@ -344,7 +343,7 @@ const NuevoComboForm = () => {
                         },
                     ]}
                 >
-                    <Input type="number" min={0} />
+                    <Input type="number" min={0}/>
                 </Form.Item>
 
                 <Form.Item
