@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Form, Card, Input, Pagination, Button, Select, Modal, Upload, Tooltip, Badge, Segmented, Avatar, Checkbox, notification, Drawer, Divider, Watermark, message } from 'antd';
+import { Form, Card, Input, Pagination, Button, Select, Modal, Upload, Tooltip, Badge,Tag, Segmented, Avatar, Checkbox,Popover,notification, Drawer, Divider, Watermark, message } from 'antd';
 import { Row, Col } from 'react-bootstrap';
-import { UploadOutlined, CalendarTwoTone, EditFilled } from '@ant-design/icons';
+import { UploadOutlined, CalendarTwoTone, EditFilled,EyeOutlined} from '@ant-design/icons';
 import imgproductos from './res/imgproductos.png';
 import categoriaproducto from './res/categoriaproducto.png';
 import tipoproducto from './res/tipoproducto.png'
@@ -13,6 +13,7 @@ import EditarUnidadesMedida from './editarunidadmedida';
 import CrearHorariosSemanales from './crearhorarioS';
 import articulo from './res/articulos.png'
 import EditarComponenteForm from './EditarComponente'
+import ListProductos from '../Clientes/ListaProductos';
 
 const { Meta } = Card;
 const { Option } = Select;
@@ -100,7 +101,7 @@ const EditarProducto = () => {
         } catch (error) {
             notification.error({
                 message: 'Error',
-                description: 'Error al editar el horario'+error,
+                description: 'Error al editar el horario' + error,
             });
         }
     };
@@ -179,6 +180,7 @@ const EditarProducto = () => {
                     message: 'Éxito',
                     description: 'Horario editado exitosamente',
                 });
+                fetchproducto(currentPage);
             } else {
                 notification.error({
                     message: 'Error',
@@ -253,17 +255,20 @@ const EditarProducto = () => {
     };
 
     const handleEditClick = (productId) => {
-a
+        console.log('Sucede');
         const productoToEdit = productos.find((producto) => producto.id_producto === productId.id_producto);
         setEditingProductId(productId.id_producto);
         setInitialFormValues(productoToEdit);
         setEditModalVisible(true);
+        fetchproducto(currentPage);
     };
 
     const handleCancelEdit = () => {
+        
         setEditingProductId(null);
         setInitialFormValues(null);
         setEditModalVisible(false);
+        fetchproducto(currentPage);
     };
 
     const validateImageFormat = (_, fileList) => {
@@ -370,7 +375,7 @@ a
                 </Form.Item>
 
                 <Form.Item label="Puntos" name="puntosp" initialValue={producto.puntosp}>
-                    <Input />
+                    <Input type="number" />
                 </Form.Item>
 
                 <Form.Item
@@ -502,6 +507,33 @@ a
                                                                             </Button>
                                                                         </Tooltip>
                                                                     </Col>
+                                                                    <Col md={4}>
+                                                                        <Tooltip
+                                                                            title='Ver componente'
+                                                                            overlayStyle={{ width: 300 }}
+                                                                        >
+                                                                            {producto.detalle && (
+                                                                                <Popover title={<Tag color="#000000">Ensamble de componente:</Tag>} trigger="click"
+                                                                                    content={
+                                                                                        <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
+                                                                                            <p>Generado por ensamble: {producto.detalle.padrecant}</p>
+                                                                                            <hr />
+                                                                                            {producto.detalle.detalle.map((detalleItem, index) => (
+                                                                                                <div key={index}>
+                                                                                                    <Tag color="#55971A">{detalleItem.id_componentehijo.nombre}</Tag>
+                                                                                                    <p>Cantidad: {detalleItem.cantidadhijo}</p>
+                                                                                                    <p>Unidad de Medida: {detalleItem.um.nombre}</p>
+                                                                                                    <hr />
+                                                                                                </div>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                    }>
+                                                                                    <Button icon={<EyeOutlined />} />
+                                                                                </Popover>
+                                                                            )}
+
+                                                                        </Tooltip>
+                                                                    </Col >
                                                                 </Row>
 
                                                             </Col>
@@ -587,7 +619,7 @@ a
                 {selectedOpcion === 'articulo' && (
                     <>
                         <Divider>Control de artículos</Divider>
-                        <EditarComponenteForm/>
+                        <EditarComponenteForm />
                     </>)}
             </Row>
             <Modal

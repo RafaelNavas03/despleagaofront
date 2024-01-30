@@ -40,7 +40,7 @@ const CrearAvisos = () => {
     const { titulo, descripcion, imagen } = values;
 
     // Redimensionar la imagen antes de enviarla
-    const resizedImage = await resizeImage(imagen.file, 1050, 270);
+    const resizedImage = await resizeImage(imagen.file, 1050, 500);
 
     const formData = new FormData();
     formData.append('titulo', titulo);

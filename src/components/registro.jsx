@@ -56,7 +56,7 @@ const RegistroForm = () => {
       if (response.ok) {
         console.log("uwu");
       } else {
-        const errorMessage = data && data.message ? data.message : 'Error desconocido';
+        const errorMessage = data && data.error ? data.error : 'Error desconocido';
         showError(errorMessage);
       }
     } catch (error) {

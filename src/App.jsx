@@ -27,6 +27,7 @@ import ShoppingCart from "./Clientes/shopingcart";
 import ListProductos from "./Clientes/ListaProductos";
 import ItemList from "./Clientes/item";
 import React, { useState } from 'react';
+import MenuMesero from "./components/Mesero/meseromenu";
 import { ShoppingCartProvider } from './context/CarritoContext';
 import MostrarMesas from "./Clientes/Reserva";
 function App() {
@@ -61,11 +62,11 @@ function App() {
               {/* Rutas para otras secciones */}
               <Route path="/Mapa" element={<MapComponent />} />
               <Route path="/home" element={<AdminMenu />} />
+              <Route path="/homemesero" element={<MenuMesero />} />
               <Route path="/cocina" element={<MenuCocina/>} />
               <Route path="/Menu" element={<ListProductos/>} />
               <Route path="/pr" element={<ItemList/>} />
               <Route path="/Carrito" element={<ShoppingCart/>} />
-              <Route path="/Reservaciones" element={<MostrarMesas/>} />
               {/* Rutas para autenticación */}
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
               <Route path="/Registro" element={<RegisterForm />} />

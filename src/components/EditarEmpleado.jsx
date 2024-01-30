@@ -21,47 +21,50 @@ const EditarEmpleado = ({ idsucur, oficio }) => {
     };
 
     const onClosee = () => {
+        fetchDataEmpleados();
         setOpene(false);
     };
 
 
     useEffect(() => {
         console.log('llegó: ' + idsucur)
-        const fetchData = async () => {
-            try {
+        
 
-                if (!idsucur) {
-                    idsucur = 0;
-                }
-                const responseEmpleados = await fetch('http://127.0.0.1:8000/empleado/listar-empleados/' + idsucur + '/');
-
-                if (!responseEmpleados.ok) {
-                    throw new Error('Error fetching empleados');
-                }
-                const dataEmpleados = await responseEmpleados.json();
-                setEmpleados(dataEmpleados.empleados);
-
-            } catch (error) {
-                console.error('Error fetching empleados:', error);
-            }
-
-            try {
-                const responseSucursales = await fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/');
-                if (!responseSucursales.ok) {
-                    throw new Error('Error fetching sucursales');
-                }
-                const dataSucursales = await responseSucursales.json();
-                const sucursales = dataSucursales.sucursales || [];
-                setSucursales(sucursales);
-            } catch (error) {
-                console.error('Error fetching sucursales:', error);
-            }
-        };
-
-        fetchData();
+        fetchDataEmpleados();
 
 
     }, [idsucur]);
+
+    const fetchDataEmpleados = async () => {
+        try {
+
+            if (!idsucur) {
+                idsucur = 0;
+            }
+            const responseEmpleados = await fetch('http://127.0.0.1:8000/empleado/listar-empleados/' + idsucur + '/');
+
+            if (!responseEmpleados.ok) {
+                throw new Error('Error fetching empleados');
+            }
+            const dataEmpleados = await responseEmpleados.json();
+            setEmpleados(dataEmpleados.empleados);
+
+        } catch (error) {
+            console.error('Error fetching empleados:', error);
+        }
+
+        try {
+            const responseSucursales = await fetch('http://127.0.0.1:8000/sucursal/sucusarleslist/');
+            if (!responseSucursales.ok) {
+                throw new Error('Error fetching sucursales');
+            }
+            const dataSucursales = await responseSucursales.json();
+            const sucursales = dataSucursales.sucursales || [];
+            setSucursales(sucursales);
+        } catch (error) {
+            console.error('Error fetching sucursales:', error);
+        }
+    };
 
     const handleEditClick = (empleado) => {
         console.log('Empleado seleccionado para editar:', empleado);
@@ -117,7 +120,7 @@ const EditarEmpleado = ({ idsucur, oficio }) => {
                 }
             };
 
-            fetchData();
+            fetchDataEmpleados();
         } catch (error) {
             console.error('Error updating empleado:', error);
         }
