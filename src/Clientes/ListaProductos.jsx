@@ -33,17 +33,18 @@ const ListProductos =()=>{
     
       const handleCloseModal = () => {
         setShowModal(false);
+        setSelectedProduct(null);
       };
 
       const [cart, setCart] = useContext(CartContext);
 
-  const addToCart = () => {
+  const addToCart = (productId) => {
   setCart((currItems) => {
-    const isItemFound = currItems.find((item) => item.id === products.id_producto);
+    const isItemFound = currItems.find((item) => item.id === productId);
 
     if (isItemFound) {
       return currItems.map((item) => {
-        if (item.id === products.id_producto) {
+        if (item.id === productId) {
           return { ...item, quantity: item.quantity + 1 };
         } else {
           return item;
@@ -53,7 +54,7 @@ const ListProductos =()=>{
       return [
         ...currItems,
         {
-          id: products.id_producto,
+          id: productId,
           quantity: 1,
           Name: selectedProduct.nombreproducto,
           image: selectedProduct.imagenp,
@@ -65,24 +66,22 @@ const ListProductos =()=>{
 };
 
 
-  const removeItem = () => {
+  const removeItem = (productId) => {
     setCart((currItems) => {
-      if (currItems.find((item) => item.id === products.id_producto)?.quantity === 1) {
-        return currItems.filter((item) => item.id !== products.id_producto);
-      } else {
-        return currItems.map((item) => {
-          if (item.id === products.id_producto) {
-            return { ...item, quantity: item.quantity - 1 };
-          } else {
-            return item;
-          }
-        });
-      }
+      const updatedCart = currItems.map((item) => {
+        if (item.id === productId) {
+          return { ...item, quantity: Math.max(item.quantity - 1, 0) };
+        } else {
+          return item;
+        }
+      });
+
+      return updatedCart.filter((item) => item.quantity > 0);
     });
   };
 
-  const getQuantityById = () => {
-    return cart.find((item) => item.id === products.id_producto)?.quantity || 0;
+  const getQuantityById = (productId) => {
+    return cart.find((item) => item.id === productId)?.quantity || 0;
   };
 
   const quantityPerItem = getQuantityById();
@@ -127,32 +126,38 @@ const ListProductos =()=>{
                 <p>{`$${selectedProduct.preciounitario}`}</p>
 
 
-                <div style={{display:'flex', justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    {selectedProduct && (
+                      <>
+                        {getQuantityById(selectedProduct.id_producto) > 0 && (
+                        <div style={{ padding: '4px', backgroundColor: '#686868', color: '#fff', borderRadius: '50px' }}>
+                          {getQuantityById(selectedProduct.id_producto)}
+                        </div>
+                       )}
 
-                        {quantityPerItem > 0 && (
-                          <div style={{padding:'4px',backgroundColor: '#686868',  
-                        color: '#fff', borderRadius:'50px'}}>{quantityPerItem}</div>
-                        )}
-
-
-                        {quantityPerItem === 0 ? (
-                          <Button style={{border: 'none'}} onClick={() => addToCart()}>
+                        {getQuantityById(selectedProduct.id_producto) === 0 ? (
+                          <Button style={{ border: 'none' }} onClick={() => addToCart(selectedProduct.id_producto)}>
                             + Añadir al carrito
                           </Button>
                         ) : (
-                          <Button style={{marginLeft:'10px', backgroundColor: '#004e0e',  
-                          color: '#fff', border: 'none' }} onClick={() => addToCart()}>
-                            + Añadir mas
+                          <Button
+                            style={{ marginLeft: '10px', backgroundColor: '#004e0e', color: '#fff', border: 'none' }}
+                            onClick={() => addToCart(selectedProduct.id_producto)}
+                          >
+                            + Añadir más
                           </Button>
                         )}
 
-                        {quantityPerItem > 0 && (
-                          <Button style={{marginLeft:'10px',
-                          backgroundColor: '#e20000',  
-                          color: '#fff',border: 'none'}} onClick={() => removeItem()}>
-                            - Quitar 
+                        {getQuantityById(selectedProduct.id_producto) > 0 && (
+                          <Button
+                            style={{ marginLeft: '10px', backgroundColor: '#e20000', color: '#fff', border: 'none' }}
+                            onClick={() => removeItem(selectedProduct.id_producto)}
+                          >
+                            - Quitar
                           </Button>
                         )}
+                      </>
+                    )}
                   </div>
               </>
             )}
