@@ -207,7 +207,22 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
         <span>{tipoSeleccionado === 'producto' ? "Producto" : "Componente"}</span>
       ),
     },
+    {
+      title: "Acciones",
+      dataIndex: "acciones",
+      key: "acciones",
+      render: (text, record) => (
+        <Button type="danger" onClick={() => handleEliminarPedidoItem(record)}>
+          Eliminar
+        </Button>
+      ),
+    },
   ];
+
+  const handleEliminarPedidoItem = (record) => {
+    const newPedidoItems = pedidoItems.filter(item => item.id !== record.id);
+    setPedidoItems(newPedidoItems);
+  };
 
   const handleAgregarPedido = (record) => {
     const exists = pedidoItems.some((item) => item.id === record.id_componente || item.id === record.id_producto);
@@ -244,12 +259,12 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
     }
   };
   const handleCantidadChange = (record, cantidad) => {
-    console.log('Enviando cantidad: '+cantidad)
+    console.log('Enviando cantidad: ' + cantidad)
     console.log(record);
     console.log(pedidoItems);
     const index = pedidoItems.findIndex((item) => item.id === record.id);
     if (index !== -1) {
-      console.log('Index: '+index)
+      console.log('Index: ' + index)
       const newPedidoItems = [...pedidoItems];
       newPedidoItems[index].cantidad = cantidad;
       setPedidoItems(newPedidoItems);
@@ -301,7 +316,8 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
         notification.success({
           message: 'Éxito',
           description: 'Inventario registrado exitosamente',
-      });
+        });
+        setPedidoItems([]);
         console.log(data.mensaje); // Imprimir la respuesta en la consola
         onClose(); // Cerrar el modal u realizar otras acciones necesarias
       } else {
@@ -309,7 +325,7 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
         notification.error({
           message: 'Éxito',
           description: errorData.error,
-      });
+        });
         throw new Error(response.error);
       }
     } catch (error) {
@@ -320,6 +336,7 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
 
   const onFinish = (values) => {
     handlePedidoSubmit(values);
+
     onClose();
   };
 
@@ -328,6 +345,7 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
       title="Registrar inventario"
       visible={visible}
       onCancel={onClose}
+      width={1000}
       footer={[
         <Button key="cancel" onClick={onClose}>
           Cancelar
@@ -430,6 +448,7 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
             pagination={false}
             rowKey="id_producto"
           />
+
         </div>
       </Form>
     </Modal >
