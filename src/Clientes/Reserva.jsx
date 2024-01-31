@@ -86,6 +86,22 @@ const Reserva = () => {
     }
   };
 
+  const generateHourOptions = () => {
+    const options = [];
+    const startHour = 12;
+    const endHour = 21;
+    const interval = 30;
+
+    for (let hour = startHour; hour <= endHour; hour++) {
+      for (let minute = 0; minute < 60; minute += interval) {
+        const formattedHour = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+        options.push(<Option key={formattedHour} value={formattedHour}>{formattedHour}</Option>);
+      }
+    }
+
+    return options;
+  };
+
   const paginatedMesas = mesas.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   // Determinar el tamaño de las columnas de acuerdo al tamaño de la fila
@@ -96,7 +112,7 @@ const Reserva = () => {
       <Row gutter={16}>
         {paginatedMesas.map((mesa) => (
           <Col key={mesa.id_mesa} xs={24} sm={colSize} md={colSize} lg={colSize} style={{ marginBottom: '16px' }}>
-            <Card title={`Mesa ${mesa.id_mesa}`&&`${mesa.observacion}`} onClick={() => handleCardClick(mesa)}>
+            <Card title={`Mesa ${mesa.id_mesa}`} onClick={() => handleCardClick(mesa)}>
               <p>Observación: {mesa.observacion}</p>
               <p>Máx. Personas: {mesa.max_personas}</p>
             </Card>
@@ -127,9 +143,7 @@ const Reserva = () => {
         <Space direction="vertical" style={{ width: '100%' }}>
           <DatePicker onChange={handleDateChange} placeholder="Seleccione una fecha" style={{ marginBottom: '8px' }} />
           <Select onChange={handleHourChange} placeholder="Seleccione una hora" style={{ width: '100%', marginBottom: '16px' }}>
-            <Option value="09:00">09:00</Option>
-            <Option value="12:00">12:00</Option>
-            <Option value="18:00">06:00</Option>
+            {generateHourOptions()}
           </Select>
           <p>Fecha seleccionada: {selectedDate && selectedDate.format('YYYY-MM-DD')}</p>
           <p>Hora seleccionada: {selectedHour}</p>
