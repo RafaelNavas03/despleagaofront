@@ -39,6 +39,8 @@ import CrearRecompensaProductoForm from "./CrearRecompensaProducto.jsx";
 import Recompensa from "./recompensa.jsx";
 import EditarRecompensaProductoForm from "./EditarRecompensaProducto.jsx";
 import EditarAvisos from "./editaravisos.jsx";
+import imgreserva from "./res/imgreserva.png";
+import EditarReservacionesForm from "./EditarReservacion.jsx";
 
 const MenuG = () => {
   const { Meta } = Card;
@@ -54,6 +56,7 @@ const MenuG = () => {
   const tooltipTitle10 = "Agrega y gestiona tus proveedores";
   const tooltipTitle11 = "Agrega y gestiona tus inventarios";
   const tooltipTitle12 = "Prepara insumos y productos";
+  const tooltipTitle13 = "Agrega y edita reservaciones";
 
   const [currentPage, setCurrentPage] = useState("home");
 
@@ -404,6 +407,32 @@ const MenuG = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
+            <Col xs={24} sm={12} md={5} lg={3}>
+              <Badge.Ribbon text="Reservaciones" color="#4CAF50">
+                <Tooltip title={tooltipTitle13}>
+                  <Card
+                    hoverable
+                    style={cardStyle}
+                    onClick={() => handleCardClick("reserva")}
+                    cover={
+                      <Image
+                        alt="Reservaciones"
+                        src={imgreserva}
+                        style={{
+                          padding: "5%",
+                          height: "150px",
+                          width: "auto",
+                        }}
+                        preview={false}
+                      />
+                    }
+                    className="text-center"
+                  >
+                    <Meta title={tooltipTitle13}></Meta>
+                  </Card>
+                </Tooltip>
+              </Badge.Ribbon>
+            </Col>
           </>
         )}
         {currentPage === "empresa" && (
@@ -529,6 +558,16 @@ const MenuG = () => {
             <Row>
               <Col md={12}>
                 <EditarAvisos />
+              </Col>
+            </Row>
+          </>
+        )}
+        {currentPage == "reserva" && (
+          <>
+            <Divider>Reservaciones</Divider>
+            <Row>
+              <Col md={12}>
+                <EditarReservacionesForm/>
               </Col>
             </Row>
           </>

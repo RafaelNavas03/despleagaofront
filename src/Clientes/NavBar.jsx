@@ -11,6 +11,7 @@ import Carrusel from './carrusel';
 import { CartContext } from "../context/CarritoContext";
 import EditarUser from "./EditarUser"
 import ListProductos from './ListaProductos';
+import Reserva from './Reserva';
 
 
 const NavBar =()=>{
@@ -97,7 +98,9 @@ const NavBar =()=>{
                 Cerrar sesion
               </NavDropdown.Item>
             </NavDropdown>}
-          {Logeado && <Nav.Link href="/Reservaciones">Reservaciones</Nav.Link>}
+          {Logeado && <Link style={{ textDecoration: 'none', color: 'inherit' }}
+          onClick={() => MostrarComponente('Reserva')}> <Nav.Link to="/Reserva">Reserva 
+          <span>{quantity}</span></Nav.Link></Link>}
        
           {Logeado && <Nav.Link>Puntos</Nav.Link>}
 
@@ -117,6 +120,7 @@ const NavBar =()=>{
   {ComponenteSeleccionado === 'Menu' && <ListProductos/>}
   {ComponenteSeleccionado === 'Perfil' && <EditarUser/>}
   {ComponenteSeleccionado === 'Carrito' && <ShoppingCart />}
+  {ComponenteSeleccionado === 'Reserva' && <Reserva/>}
   {ComponenteSeleccionado != 'Carrusel' && (
     
               <Row>

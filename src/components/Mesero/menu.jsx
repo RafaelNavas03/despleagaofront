@@ -14,6 +14,7 @@ import {
   Offcanvas,
 } from "react-bootstrap";
 import imgtomarpedido from "./res/imgtomarpedido.png";
+import RealizarPedidoMesero from "./pedidomesa";
 
 const MenuM = () => {
   const { Meta } = Card;
@@ -46,9 +47,8 @@ const MenuM = () => {
     whiteSpace: "nowrap",
   };
 
-  
   const openNewWindow = () => {
-    window.open('/cocina', '_blank'); 
+    window.open("/cocina", "_blank");
   };
 
   return (
@@ -56,7 +56,7 @@ const MenuM = () => {
       <Row>
         {currentPage === "homemesero" && (
           <>
-          <Col xs={24} sm={12} md={5} lg={3}>
+            <Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Pedidos">
                 <Tooltip title={tooltipTitle}>
                   <Card
@@ -87,8 +87,9 @@ const MenuM = () => {
         {currentPage === "pedidos" && (
           <>
             <Row>
+              <Divider>Pedidos de mesas</Divider>
               <Col md={12}>
-                
+                <RealizarPedidoMesero />
               </Col>
             </Row>
           </>
