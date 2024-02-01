@@ -1,8 +1,9 @@
 import React, { useState,  useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Container, Row, Col, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Form, Button, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faUser,  faMapMarkerAlt, faEye, faEyeSlash  } from '@fortawesome/free-solid-svg-icons';
+import Map2 from './Map2';
 import god from '../assets/images/god1.jpg'
 import NavBar from './NavBar';
 
@@ -10,12 +11,23 @@ import NavBar from './NavBar';
 const EditarUser =()=>{
   const [selectedImage, setSelectedImage] = useState(null);
   const [isEditing, setIsEditing] = useState(false); 
+  const [MostrarModal, setMostrarModal] = useState(false);
 
-
-  const handleMarkerClick = () => {
-    if (isEditing) {
-    setIsModalOpen(true);
-    }
+  const [locationData, setLocationData] = useState({
+    latitud1: 0,
+    longitud1: 0,
+    latitud2: 0,
+    longitud2: 0,
+    latitud3: 0,
+    longitud3: 0,
+  });
+  
+  const handleLocationSelect = (location) => {
+    setLocationData((prevLocation) => ({
+      ...prevLocation,
+      ...location,
+    }));
+    CerrarModal();
   };
   const handleEditClick = () => {
     setIsEditing(true);
@@ -23,6 +35,18 @@ const EditarUser =()=>{
   const handleSaveClick = () => {
     setIsEditing(false);
   };
+
+ 
+
+  const HacerClick = () => {
+    setMostrarModal(true);
+  };
+
+  const CerrarModal = () => {
+    setMostrarModal(false);
+
+  };
+
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -33,6 +57,15 @@ const EditarUser =()=>{
         .then(response => response.json())
         .then(data => {
           setUserData(data.usuario);
+          
+          setLocationData({
+            latitud1: data.usuario?.ubicacion1?.latitud || 0,
+            longitud1: data.usuario?.ubicacion1?.longitud || 0,
+            latitud2: data.usuario?.ubicacion2?.latitud || 0,
+            longitud2: data.usuario?.ubicacion2?.longitud || 0,
+            latitud3: data.usuario?.ubicacion3?.latitud || 0,
+            longitud3: data.usuario?.ubicacion3?.longitud || 0,
+          });
         })
         .catch(error => console.error('Error al obtener datos del usuario:', error));
     } else {
@@ -40,7 +73,7 @@ const EditarUser =()=>{
     }
   }, []);
 
-
+ 
   const { getRootProps, getInputProps } = useDropzone({
     accept: 'image/*',
     onDrop: (acceptedFiles) => {
@@ -53,7 +86,7 @@ const EditarUser =()=>{
 
 return(
     <>
-    <NavBar/>
+ 
         <Container>
         
           <Row>
@@ -104,7 +137,7 @@ return(
                 </div>
                 <div style={{ textAlign: 'center',}}>
               <Button variant="secondary" type="button" style={{ width: '150px', borderRadius: '10px', marginTop: '10px' }}>
-              Eidtar contraseña
+              Editar contraseña
               </Button>
             </div>
             <Col md={1100} style={{ ...styles.centerContainer, marginTop: '20px',  }}>
@@ -131,9 +164,9 @@ return(
                    <Row>
                      <Col>
                      <Form.Label>Nombre</Form.Label>
-                      <Form.Control value={userData?.snombre || ''} 
+                      <Form.Control value={userData?.nombre_usuario || ''} 
                        readOnly={!isEditing}
-                       onChange={(e) => isEditing && setUserData({ ...userData, snombre: e.target.value })}
+                       onChange={(e) => isEditing && setUserData({ ...userData, nombre_usuario: e.target.value })}
                       />
                     </Col>
                     <Col>
@@ -158,10 +191,17 @@ return(
                     <Form.Label>Direccion 1</Form.Label>
                   
                     <Col lg={10}>
-                    <Form.Control value={`Latitud: ${userData?.ubicacion1?.latitud || ''}, Longitud: ${userData?.ubicacion1?.longitud || ''}`}/>
+                    <Form.Control
+                        as="textarea"
+                        rows={3}
+                        value={`Latitud: ${locationData.latitud1}, 
+Longitud: ${locationData.longitud1}`}
+                      />
+             
                     </Col>
                     <Col  lg={1}>
                       <FontAwesomeIcon
+                      onClick={HacerClick}
                       icon={faMapMarkerAlt} size="2x"/>
                       </Col> 
                     </Row>
@@ -205,18 +245,30 @@ return(
                     <Row>
                       <Form.Label>Direccion 2</Form.Label>
                       <Col lg={10}>
-                      <Form.Control/>
+                      <Form.Control 
+                      as="textarea"
+                      rows={3}
+                        value={`Latitud: ${locationData.latitud2}, 
+Longitud: ${locationData.longitud2}`}
+                      />
                       </Col>
                       <Col  lg={1}>
                         <FontAwesomeIcon
+                        onClick={HacerClick}
                         icon={faMapMarkerAlt} size="2x"/>
                         </Col>
                         <Form.Label>Direccion 3</Form.Label>
                       <Col lg={10}>
-                      <Form.Control/>
+                      <Form.Control 
+                      as="textarea"
+                      rows={3}
+                        value={`Latitud: ${locationData.latitud3}, 
+Longitud: ${locationData.longitud3}`}
+                      />
                       </Col>
                       <Col  lg={1}>
                         <FontAwesomeIcon
+                        onClick={HacerClick}
                         icon={faMapMarkerAlt} size="2x"/>
                         </Col>  
                       </Row>
@@ -235,6 +287,7 @@ return(
                       </Col>
                     <Col>
                       <FontAwesomeIcon
+                        onClick={HacerClick}
                         icon={faMapMarkerAlt} size="2x"/>
                     </Col>
                     </Row>    
@@ -259,6 +312,15 @@ return(
           </Row>
         </Container>
 
+        {isEditing && (
+          <Modal show={MostrarModal} onHide={CerrarModal} size="lg" >
+            <Modal.Header closeButton  style={{ borderBottom: 'none' }}>
+            </Modal.Header>
+            <Modal.Body>
+              <Map2  onLocationSelect={handleLocationSelect}/>
+            </Modal.Body>
+          </Modal>
+        )}
         </>
       );
     }

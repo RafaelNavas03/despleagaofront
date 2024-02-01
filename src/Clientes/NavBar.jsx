@@ -9,6 +9,7 @@ import RegistroForm from '../components/registro';
 import ShoppingCart from './shopingcart';
 import Carrusel from './carrusel';
 import { CartContext } from "../context/CarritoContext";
+import EditarUser from "./EditarUser"
 import ListProductos from './ListaProductos';
 
 
@@ -56,7 +57,11 @@ const NavBar =()=>{
       };
 
       
-
+      const CerrarSesion = () => {
+        setLogeado(false);
+        setComponenteSeleccionado('Carrusel'); 
+      };
+      
       const RegresarAlLogin = () => {
         setModalRegistroVisible(false);
         setMostrarModal(true);
@@ -86,9 +91,9 @@ const NavBar =()=>{
         <Nav className="ml-auto">
           <Nav.Link onClick={() => MostrarComponente('Menu')}>Menú</Nav.Link>
           {Logeado &&<NavDropdown title="Perfil">
-              <NavDropdown.Item href="/Perfil" style={{marginLeft: 'auto', fontSize: '14px' }}>Ver perfil</NavDropdown.Item>
+              <NavDropdown.Item onClick={() => MostrarComponente('Perfil')} style={{marginLeft: 'auto', fontSize: '14px' }}>Ver perfil</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item onClick={()=> setLogeado(false)} style={{ fontSize: '14px' }}>
+              <NavDropdown.Item onClick={CerrarSesion}  style={{ fontSize: '14px' }}>
                 Cerrar sesion
               </NavDropdown.Item>
             </NavDropdown>}
@@ -110,6 +115,7 @@ const NavBar =()=>{
 <div>
   {ComponenteSeleccionado === 'Carrusel' && <Carrusel/>}
   {ComponenteSeleccionado === 'Menu' && <ListProductos/>}
+  {ComponenteSeleccionado === 'Perfil' && <EditarUser/>}
   {ComponenteSeleccionado === 'Carrito' && <ShoppingCart />}
   {ComponenteSeleccionado != 'Carrusel' && (
     
