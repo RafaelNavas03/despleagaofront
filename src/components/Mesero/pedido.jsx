@@ -1,18 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Table, Avatar, Select, Pagination, Input } from "antd";
+import {
+  Modal,
+  Button,
+  Form,
+  Table,
+  Avatar,
+  Select,
+  Pagination,
+  Input,
+  notification,
+} from "antd";
 import { ShoppingOutlined, UserOutlined } from "@ant-design/icons";
 import dayjs from "dayjs";
 
 const { Option } = Select;
 
-const RealizarPedidoMesa = ({ visible, onClose }) => {
+const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
   const [form] = Form.useForm();
   const [clientes, setClientes] = useState([]);
-  const [productos, setProductos] = useState([]); // Agregamos estado para los productos
+  const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 3; // Número de elementos por página
+  const pageSize = 3;
   const [cantidadProductos, setCantidadProductos] = useState({});
+  const [precioUnitario, setPrecioUnitario] = useState({});
+  const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
@@ -49,8 +61,19 @@ const RealizarPedidoMesa = ({ visible, onClose }) => {
       title: "Acción",
       key: "action",
       render: (text, record) => (
-        <Button type="primary" onClick={() => handleSelectCliente(record)}>
-          Seleccionar
+        <Button
+          type={
+            clienteSeleccionado &&
+            clienteSeleccionado.id_cliente === record.id_cliente
+              ? "default"
+              : "primary"
+          }
+          onClick={() => handleSelectCliente(record)}
+        >
+          {clienteSeleccionado &&
+          clienteSeleccionado.id_cliente === record.id_cliente
+            ? "Deseleccionar"
+            : "Seleccionar"}
         </Button>
       ),
     },
@@ -100,21 +123,39 @@ const RealizarPedidoMesa = ({ visible, onClose }) => {
   ];
 
   const handleCantidadChange = (idProducto, cantidad) => {
-    // Actualizar el estado de cantidadProductos
     setCantidadProductos((prevCantidadProductos) => ({
       ...prevCantidadProductos,
       [idProducto]: cantidad,
     }));
+
+    const producto = productos.find((p) => p.id_producto === idProducto);
+    if (producto) {
+      setPrecioUnitario((prevPrecioUnitario) => ({
+        ...prevPrecioUnitario,
+        [idProducto]: producto.preciounitario,
+      }));
+    }
   };
 
   const handleSelectCliente = (cliente) => {
-    // Puedes manejar la lógica de selección del cliente aquí
-    console.log("Cliente seleccionado:", cliente);
+    if (
+      clienteSeleccionado &&
+      clienteSeleccionado.id_cliente === cliente.id_cliente
+    ) {
+      setClienteSeleccionado(null);
+    } else {
+      setClienteSeleccionado(cliente);
+      console.log("Cliente seleccionado:", cliente.id_cliente);
+      form.setFieldsValue({ id_cliente: cliente.id_cliente }); // Activa el cliente seleccionado en el formulario
+    }
   };
 
   const handleTipoPedidoChange = (value) => {
-    // Puedes manejar la lógica de cambio de tipo de pedido aquí
     console.log("Tipo de pedido seleccionado:", value);
+    console.log(
+      "Cliente seleccionado:",
+      clienteSeleccionado ? clienteSeleccionado.id_cliente : "Ninguno"
+    );
   };
 
   const handleMetodoPagoChange = (value) => {
@@ -127,9 +168,89 @@ const RealizarPedidoMesa = ({ visible, onClose }) => {
     console.log("Estado del pedido seleccionado:", value);
   };
 
+  const handlePedidoSubmit = async (values) => {
+    try {
+      const detalles_pedido = Object.keys(cantidadProductos).map(
+        (idProducto) => ({
+          id_producto: idProducto,
+          cantidad: cantidadProductos[idProducto],
+          precio_unitario: precioUnitario[idProducto] || 0,
+          impuesto: 2.5,
+          descuento: 0.5,
+        })
+      );
+  
+      const totalPedido = Object.keys(cantidadProductos).reduce(
+        (total, idProducto) => {
+          const cantidad = cantidadProductos[idProducto];
+          const precioUnitarioProducto = precioUnitario[idProducto] || 0;
+          return total + cantidad * precioUnitarioProducto;
+        },
+        0
+      );
+  
+      const formData = new FormData();
+      formData.append("id_mesa", idMesa);
+      formData.append("id_cliente", values.id_cliente);
+      formData.append("tipo_de_pedido", values.tipo_de_pedido);
+      formData.append("metodo_de_pago", values.metodo_de_pago);
+      formData.append("puntos", 3);
+      formData.append("fecha_pedido", dayjs().format());
+      formData.append("fecha_entrega", "2024-01-30 20:00:00");
+      formData.append("estado_del_pedido", values.estado_del_pedido);
+      formData.append("observacion_del_cliente", "Nada");
+      formData.append("total_pedido", totalPedido);
+      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+  
+      const response = await fetch(
+        "http://127.0.0.1:8000/Mesero/tomar_pedido/",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+  
+
+      // Manejar la respuesta de la API
+      if (response.ok) {
+        notification.success({
+          message: "Éxito",
+          description: "Inventario registrado exitosamente",
+        });
+        setPedidoItems([]);
+        console.log(data.mensaje); // Imprimir la respuesta en la consola
+        onClose(); // Cerrar el modal u realizar otras acciones necesarias
+      } else {
+        const errorData = await response.json();
+        notification.error({
+          message: "Éxito",
+          description: errorData.error,
+        });
+        throw new Error(response.error);
+      }
+    } catch (error) {
+      console.error("Error al enviar el pedido:" + error);
+    }
+  };
+
+  const onFinish = (values) => {
+    handlePedidoSubmit(values);
+
+    onClose();
+  };
+
   const paginatedData = clientes.slice(
     (currentPage - 1) * pageSize,
     currentPage * pageSize
+  );
+
+  const totalPedido = Object.keys(cantidadProductos).reduce(
+    (total, idProducto) => {
+      const cantidad = cantidadProductos[idProducto];
+      const precioUnitarioProducto = precioUnitario[idProducto] || 0; // Cambiado a precioUnitario
+      return total + cantidad * precioUnitarioProducto;
+    },
+    0
   );
 
   return (
@@ -151,20 +272,27 @@ const RealizarPedidoMesa = ({ visible, onClose }) => {
         </Button>,
       ]}
     >
-      <Form form={form}>
-        <Table
-          dataSource={paginatedData}
-          columns={columnsClientes}
-          rowKey="id_cliente"
-          pagination={false}
-        />
-        <Pagination
-          current={currentPage}
-          total={clientes.length}
-          pageSize={pageSize}
-          onChange={(page) => setCurrentPage(page)}
-          style={{ marginTop: 16, textAlign: "center" }}
-        />
+      <Form form={form} onFinish={onFinish}>
+        <Form.Item label="Cliente" name="id_cliente">
+          <Select
+            placeholder="Selecciona un cliente"
+            style={{ width: "100%" }}
+            onChange={(value, option) => handleSelectCliente(option.data)}
+            value={
+              clienteSeleccionado ? clienteSeleccionado.id_cliente : undefined
+            }
+          >
+            {clientes.map((cliente) => (
+              <Option
+                key={cliente.id_cliente}
+                value={cliente.id_cliente}
+                data={cliente}
+              >
+                {`${cliente.snombre} ${cliente.capellido}`}
+              </Option>
+            ))}
+          </Select>
+        </Form.Item>
         <Form.Item label="Tipo de pedido" name="tipo_de_pedido">
           <Select
             placeholder="Selecciona el tipo de pedido"
@@ -214,8 +342,12 @@ const RealizarPedidoMesa = ({ visible, onClose }) => {
           rowKey="id_producto"
           pagination={false}
         />
+        <div style={{ marginTop: 16, textAlign: "right" }}>
+          <strong>Total del Pedido: ${totalPedido.toFixed(2)}</strong>
+        </div>
       </Form>
     </Modal>
   );
 };
+
 export default RealizarPedidoMesa;

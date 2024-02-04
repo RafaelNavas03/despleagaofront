@@ -43,8 +43,7 @@ const EditarBodegaForm = () => {
   const [componentes, setComponentes] = useState([]);
   const [productos, setProductos] = useState([]);
   const [unidadesMedida, setUnidadesMedida] = useState([]);
-  const detallesPedido = form.getFieldValue("detalles_pedido");
-  const [BodegaEnv,setBodegaEnv]=useState('');
+  const [BodegaEnv, setBodegaEnv] = useState("");
   const [modalRealizarPedidoVisible, setModalRealizarPedidoVisible] =
     useState(false);
 
@@ -317,12 +316,11 @@ const EditarBodegaForm = () => {
       </Drawer>
       {BodegaEnv && (
         <RealizarPedido
-        visible={modalRealizarPedidoVisible}
-        bodega={BodegaEnv}
-        onClose={() => setModalRealizarPedidoVisible(false)}
-      />
-      ) }
-      
+          visible={modalRealizarPedidoVisible}
+          bodega={BodegaEnv}
+          onClose={() => setModalRealizarPedidoVisible(false)}
+        />
+      )}
     </div>
   );
 };

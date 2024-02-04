@@ -16,6 +16,7 @@ const RealizarPedidoMesero = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const [modalVisible, setModalVisible] = useState(false);
+  const [MesaEnv, setMesaEnv] = useState("");
 
   useEffect(() => {
     fetch("http://127.0.0.1:8000/Mesas/ver_mesas/")
@@ -30,6 +31,7 @@ const RealizarPedidoMesero = () => {
 
   const handleTomarPedido = (mesaId) => {
     console.log(`Tomar pedido para la mesa con ID ${mesaId}`);
+    setMesaEnv(mesaId);
     setModalVisible(true);
   };
 
@@ -134,6 +136,7 @@ const RealizarPedidoMesero = () => {
       <RealizarPedidoMesa
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
+        idMesa={MesaEnv}
       />
     </div>
   );
