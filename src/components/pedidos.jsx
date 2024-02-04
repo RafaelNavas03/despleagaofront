@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Modal, Button, Form, Select, InputNumber, Table, message, notification } from "antd";
+import {
+  Modal,
+  Button,
+  Form,
+  Select,
+  InputNumber,
+  Table,
+  message,
+  notification,
+} from "antd";
 
 const { Option } = Select;
 
@@ -83,7 +92,7 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
   const listarp = async (id_tipoproducto) => {
     setLoading(true);
     try {
-      let url = 'http://127.0.0.1:8000/producto/listar_categorias/';
+      let url = "http://127.0.0.1:8000/producto/listar_categorias/";
 
       const responseCategorias = await fetch(url);
       const data = await responseCategorias.json();
@@ -91,18 +100,18 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
       if (data && Array.isArray(data.categorias)) {
         const categoriasFiltradas = id_tipoproducto
           ? data.categorias.filter(
-            (categoria) =>
-              categoria.id_tipoproducto.id_tipoproducto === id_tipoproducto
-          )
+              (categoria) =>
+                categoria.id_tipoproducto.id_tipoproducto === id_tipoproducto
+            )
           : data.categorias;
 
         setCategorias(data.categorias);
         setCategoriaId(categoriasFiltradas[0]?.id_categoria);
       } else {
-        message.error('La respuesta de la API no tiene el formato esperado.');
+        message.error("La respuesta de la API no tiene el formato esperado.");
       }
     } catch (error) {
-      message.error('Hubo un error al realizar la solicitud' + error);
+      message.error("Hubo un error al realizar la solicitud" + error);
     } finally {
       setLoading(false);
     }
@@ -204,7 +213,9 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
       dataIndex: "tipo",
       key: "tipo",
       render: (text, record) => (
-        <span>{tipoSeleccionado === 'producto' ? "Producto" : "Componente"}</span>
+        <span>
+          {tipoSeleccionado === "producto" ? "Producto" : "Componente"}
+        </span>
       ),
     },
     {
@@ -220,24 +231,33 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
   ];
 
   const handleEliminarPedidoItem = (record) => {
-    const newPedidoItems = pedidoItems.filter(item => item.id !== record.id);
+    const newPedidoItems = pedidoItems.filter((item) => item.id !== record.id);
     setPedidoItems(newPedidoItems);
   };
 
   const handleAgregarPedido = (record) => {
-    const exists = pedidoItems.some((item) => item.id === record.id_componente || item.id === record.id_producto);
+    const exists = pedidoItems.some(
+      (item) =>
+        item.id === record.id_componente || item.id === record.id_producto
+    );
 
     if (!exists) {
       const nuevoItem = {
-        id: tipoSeleccionado === 'componente' ? record.id_componente : record.id_producto,
-        nombre: tipoSeleccionado === 'componente' ? record.nombre : record.nombreproducto,
+        id:
+          tipoSeleccionado === "componente"
+            ? record.id_componente
+            : record.id_producto,
+        nombre:
+          tipoSeleccionado === "componente"
+            ? record.nombre
+            : record.nombreproducto,
         cantidad: 1,
         costo: 0, // Valor predeterminado del costo
         tipo: tipoSeleccionado,
       };
       setPedidoItems([...pedidoItems, nuevoItem]);
     } else {
-      message.warning('El producto o componente ya ha sido agregado.');
+      message.warning("El producto o componente ya ha sido agregado.");
     }
   };
 
@@ -251,7 +271,13 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
   };
 
   const handleCostoChange = (record, costo) => {
-    const index = pedidoItems.findIndex((item) => item.id === (tipoSeleccionado === 'componente' ? record.id_componente : record.id_producto));
+    const index = pedidoItems.findIndex(
+      (item) =>
+        item.id ===
+        (tipoSeleccionado === "componente"
+          ? record.id_componente
+          : record.id_producto)
+    );
     if (index !== -1) {
       const newPedidoItems = [...pedidoItems];
       newPedidoItems[index].costo = costo;
@@ -259,12 +285,12 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
     }
   };
   const handleCantidadChange = (record, cantidad) => {
-    console.log('Enviando cantidad: ' + cantidad)
+    console.log("Enviando cantidad: " + cantidad);
     console.log(record);
     console.log(pedidoItems);
     const index = pedidoItems.findIndex((item) => item.id === record.id);
     if (index !== -1) {
-      console.log('Index: ' + index)
+      console.log("Index: " + index);
       const newPedidoItems = [...pedidoItems];
       newPedidoItems[index].cantidad = cantidad;
       setPedidoItems(newPedidoItems);
@@ -275,9 +301,9 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
     try {
       // Construir el objeto detalles_pedido con los datos necesarios
       const detalles_pedido = pedidoItems.map((item) => {
-        if (item.tipo == 'componente') {
+        if (item.tipo == "componente") {
           return {
-            id_producto: '',
+            id_producto: "",
             id_componente: item.id,
             cantidad_pedido: item.cantidad,
             costo_unitario: item.costo,
@@ -285,37 +311,42 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
             stock_minimo: 20,
           };
         }
-        if (item.tipo == 'producto') {
+        if (item.tipo == "producto") {
           return {
             id_producto: item.id,
-            id_componente: '',
+            id_componente: "",
             cantidad_pedido: item.cantidad,
             costo_unitario: item.costo,
             id_um: item.unidadMedida,
-            stock_minimo: 20  // Ajusta el valor según tus necesidades
+            stock_minimo: 20, // Ajusta el valor según tus necesidades
           };
         }
       });
-      console.log('Lo que se solicita:');
+      console.log("Lo que se solicita:");
       console.log(detalles_pedido);
       const formData = new FormData();
-      formData.append('id_proveedor', values.id_proveedor);
-      formData.append('fecha_pedido', values.fecha_pedido);
-      formData.append('fecha_entrega_esperada', values.fecha_entrega_esperada);
-      formData.append('observacion_pedido', values.observacion_pedido);
-      formData.append('detalles_pedido', JSON.stringify({ detalles_pedido }));
-      console.log('Bodega:');
+      formData.append("id_proveedor", values.id_proveedor);
+      formData.append("fecha_pedido", values.fecha_pedido);
+      formData.append("fecha_entrega_esperada", values.fecha_entrega_esperada);
+      formData.append("observacion_pedido", values.observacion_pedido);
+      formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
+      console.log("Bodega:");
       console.log(bodega);
-      const response = await fetch('http://127.0.0.1:8000/Inventario/crearinventario/' + bodega.id_bodega + '/', {
-        method: 'POST',
-        body: formData,
-      });
+      const response = await fetch(
+        "http://127.0.0.1:8000/Inventario/crearinventario/" +
+          bodega.id_bodega +
+          "/",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
 
       // Manejar la respuesta de la API
       if (response.ok) {
         notification.success({
-          message: 'Éxito',
-          description: 'Inventario registrado exitosamente',
+          message: "Éxito",
+          description: "Inventario registrado exitosamente",
         });
         setPedidoItems([]);
         console.log(data.mensaje); // Imprimir la respuesta en la consola
@@ -323,13 +354,13 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
       } else {
         const errorData = await response.json();
         notification.error({
-          message: 'Éxito',
+          message: "Éxito",
           description: errorData.error,
         });
         throw new Error(response.error);
       }
     } catch (error) {
-      console.error('Error al enviar el pedido:' + error);
+      console.error("Error al enviar el pedido:" + error);
       // Manejar el error, mostrar un mensaje al usuario, etc.
     }
   };
@@ -401,7 +432,7 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
           </Form.Item>
         )}
 
-        {tipoSeleccionado === 'componente' && (
+        {tipoSeleccionado === "componente" && (
           <Table
             dataSource={filteredData}
             columns={[
@@ -411,7 +442,10 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
                 dataIndex: "id_producto",
                 key: "agregar",
                 render: (text, record) => (
-                  <Button type="primary" onClick={() => handleAgregarPedido(record)}>
+                  <Button
+                    type="primary"
+                    onClick={() => handleAgregarPedido(record)}
+                  >
                     Agregar
                   </Button>
                 ),
@@ -421,7 +455,7 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
             rowKey="id"
           />
         )}
-        {tipoSeleccionado === 'producto' && (
+        {tipoSeleccionado === "producto" && (
           <Table
             dataSource={filteredData}
             columns={[
@@ -431,7 +465,10 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
                 dataIndex: "id_producto",
                 key: "agregar",
                 render: (text, record) => (
-                  <Button type="primary" onClick={() => handleAgregarPedido(record)}>
+                  <Button
+                    type="primary"
+                    onClick={() => handleAgregarPedido(record)}
+                  >
                     Agregar
                   </Button>
                 ),
@@ -448,10 +485,9 @@ const RealizarPedido = ({ visible, onClose, bodega }) => {
             pagination={false}
             rowKey="id_producto"
           />
-
         </div>
       </Form>
-    </Modal >
+    </Modal>
   );
 };
 
