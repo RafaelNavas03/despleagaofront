@@ -65,10 +65,6 @@ function App() {
               <Route path="/home" element={<AdminMenu />} />
               <Route path="/homemesero" element={<MenuMesero />} />
               <Route path="/cocina" element={<MenuCocina/>} />
-              <Route path="/Menu" element={<ListProductos/>} />
-              <Route path="/pr" element={<ItemList/>} />
-              <Route path="/Carrito" element={<ShoppingCart/>} />
-              <Route path="/Reserva" element={<Reserva/>} />
               {/* Rutas para autenticación */}
               <Route path="/login" element={<LoginForm onLogin={handleLogin} />} />
               <Route path="/Registro" element={<RegisterForm />} />
