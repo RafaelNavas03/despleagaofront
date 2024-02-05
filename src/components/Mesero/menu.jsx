@@ -84,6 +84,26 @@ const MenuM = () => {
             </Col>
           </>
         )}
+        {currentPage != "homemesero" && (
+          <>
+            <Row>
+              <Col md={12}>
+                <Button
+                  variant="success"
+                  style={{
+                    position: "fixed",
+                    right: "16px",
+                    bottom: "16px",
+                    zIndex: 1000,
+                  }}
+                  onClick={() => handleAtrasClick()}
+                >
+                  Atrás
+                </Button>
+              </Col>
+            </Row>
+          </>
+        )}
         {currentPage === "pedidos" && (
           <>
             <Row>
