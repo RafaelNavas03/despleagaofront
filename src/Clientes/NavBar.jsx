@@ -117,7 +117,7 @@ const NavBar =()=>{
   {ComponenteSeleccionado === 'Menu' && <ListProductos/>}
   {ComponenteSeleccionado === 'Perfil' && <EditarUser/>}
   {ComponenteSeleccionado === 'Carrito' && <ShoppingCart />}
-  {ComponenteSeleccionado === 'Reserva' && <Reserva/>}
+  {/*{ComponenteSeleccionado === 'Reserva' && <Reserva/>}*/}
   {ComponenteSeleccionado != 'Carrusel' && (
     
               <Row>

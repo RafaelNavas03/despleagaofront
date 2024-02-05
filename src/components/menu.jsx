@@ -407,7 +407,7 @@ const MenuG = () => {
                 </Tooltip>
               </Badge.Ribbon>
             </Col>
-            <Col xs={24} sm={12} md={5} lg={3}>
+            {/*<Col xs={24} sm={12} md={5} lg={3}>
               <Badge.Ribbon text="Reservaciones" color="#4CAF50">
                 <Tooltip title={tooltipTitle13}>
                   <Card
@@ -432,7 +432,7 @@ const MenuG = () => {
                   </Card>
                 </Tooltip>
               </Badge.Ribbon>
-            </Col>
+            </Col>*/}
           </>
         )}
         {currentPage === "empresa" && (
