@@ -17,6 +17,7 @@ const { Option } = Select;
 
 const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
   const [form] = Form.useForm();
+  const [resetForm, setResetForm] = useState(false);
   const [clientes, setClientes] = useState([]);
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -37,6 +38,19 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       .then((data) => setProductos(data.productos))
       .catch((error) => console.error("Error fetching productos:", error));
   }, []);
+
+  useEffect(() => {
+    if (resetForm) {
+      form.resetFields();
+      setResetForm(false);
+  
+      // Restablecer valores específicos
+      setClienteSeleccionado(null);
+      setCantidadProductos({});
+      setPrecioUnitario({});
+    }
+  }, [resetForm]);
+  
 
   const columnsClientes = [
     {
@@ -101,7 +115,7 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       key: "imagenp",
       render: (text) => (
         <Avatar
-          src={`data:image/jpeg;base64,${text}`} // Asegúrate de que el formato de la imagen sea correcto
+          src={`data:image/jpeg;base64,${text}`}
           size={64}
           shape="square"
         />
@@ -146,7 +160,7 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
     } else {
       setClienteSeleccionado(cliente);
       console.log("Cliente seleccionado:", cliente.id_cliente);
-      form.setFieldsValue({ id_cliente: cliente.id_cliente }); // Activa el cliente seleccionado en el formulario
+      form.setFieldsValue({ id_cliente: cliente.id_cliente });
     }
   };
 
@@ -179,7 +193,7 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
           descuento: 0.5,
         })
       );
-  
+
       const totalPedido = Object.keys(cantidadProductos).reduce(
         (total, idProducto) => {
           const cantidad = cantidadProductos[idProducto];
@@ -188,7 +202,7 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
         },
         0
       );
-  
+
       const formData = new FormData();
       formData.append("id_mesa", idMesa);
       formData.append("id_cliente", values.id_cliente);
@@ -201,7 +215,7 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       formData.append("observacion_del_cliente", "Nada");
       formData.append("total_pedido", totalPedido);
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
-  
+
       const response = await fetch(
         "http://127.0.0.1:8000/Mesero/tomar_pedido/",
         {
@@ -209,21 +223,27 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
           body: formData,
         }
       );
-  
 
-      // Manejar la respuesta de la API
       if (response.ok) {
         notification.success({
           message: "Éxito",
-          description: "Inventario registrado exitosamente",
+          description: "Pedido realizado exitosamente",
         });
-        setPedidoItems([]);
-        console.log(data.mensaje); // Imprimir la respuesta en la consola
-        onClose(); // Cerrar el modal u realizar otras acciones necesarias
+
+        console.log(data.mensaje);
+        // Limpiar todo el formulario
+        form.resetFields();
+
+        // Restablecer valores específicos
+        setClienteSeleccionado(null);
+        setCantidadProductos({});
+        setPrecioUnitario({});
+
+        onClose();
       } else {
         const errorData = await response.json();
         notification.error({
-          message: "Éxito",
+          message: "Error",
           description: errorData.error,
         });
         throw new Error(response.error);
@@ -247,7 +267,7 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
   const totalPedido = Object.keys(cantidadProductos).reduce(
     (total, idProducto) => {
       const cantidad = cantidadProductos[idProducto];
-      const precioUnitarioProducto = precioUnitario[idProducto] || 0; // Cambiado a precioUnitario
+      const precioUnitarioProducto = precioUnitario[idProducto] || 0;
       return total + cantidad * precioUnitarioProducto;
     },
     0
@@ -259,14 +279,14 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       title="Realizar Pedido"
       onCancel={onClose}
       footer={[
-        <Button key="back" onClick={onClose}>
-          Cancelar
-        </Button>,
         <Button
           key="submit"
           type="primary"
           loading={loading}
-          onClick={() => form.submit()}
+          onClick={async () => {
+            await form.submit();
+            setResetForm(true);
+          }}
         >
           <ShoppingOutlined /> Realizar Pedido
         </Button>,
@@ -335,7 +355,6 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
         >
           <Input readOnly />
         </Form.Item>
-        {/* Sección para mostrar productos */}
         <Table
           dataSource={productos}
           columns={columnsProductos}
