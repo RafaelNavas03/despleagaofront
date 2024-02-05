@@ -136,11 +136,12 @@ const CocinaFuncion = ({ componente, producto }) => {
     const prepareComponent = () => {
         const formData = new FormData();
         if (selectedItems.length > 0 && bodega && componente) {
+            console.log('Gastar');
+            console.log(selectedItems);
             formData.append('lista_componentes', JSON.stringify(selectedItems));
             formData.append('cantidad_fabricar', cantidad);
             formData.append('id_componente_generado', componente.id_componente);
             formData.append('id_bodega', bodega);
-
             fetch('http://127.0.0.1:8000/producto/fabricarcomponente/', {
                 method: 'POST',
                 body: formData,
@@ -162,6 +163,8 @@ const CocinaFuncion = ({ componente, producto }) => {
                 .catch(error => console.error('Error preparing component:', error));
         }
         if (selectedItems.length > 0 && bodega && producto) {
+            console.log('Gastar');
+            console.log(selectedItems);
             formData.append('lista_componentes', JSON.stringify(selectedItems));
             formData.append('cantidad_fabricar', cantidad);
             formData.append('id_producto_generado', producto.id_producto);
