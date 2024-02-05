@@ -1,7 +1,6 @@
 import {Card, Modal, Button} from 'react-bootstrap';
 import React, { useState, useEffect, useContext  } from 'react';
 import NavBar from './NavBar';
-import { Navbar2 } from './navbar2';
 import Item from './item2';
 import { CartContext } from "../context/CarritoContext";
 

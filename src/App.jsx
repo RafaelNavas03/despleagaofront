@@ -23,14 +23,10 @@ import RegisterForm from "./components/registro";
 import AdminMenu from './components/adminmenu';
 import MenuCocina from "./components/menucocina";
 import NavBar from "./Clientes/NavBar";
-import ShoppingCart from "./Clientes/shopingcart";
-import ListProductos from "./Clientes/ListaProductos";
-import ItemList from "./Clientes/item";
 import React, { useState } from 'react';
 import MenuMesero from "./components/Mesero/meseromenu";
 import { ShoppingCartProvider } from './context/CarritoContext';
 import MostrarMesas from "./Clientes/Reserva";
-import Reserva from "./Clientes/Reserva";
 function App() {
   const {
     token: { colorBgContainer, borderRadiusLG },

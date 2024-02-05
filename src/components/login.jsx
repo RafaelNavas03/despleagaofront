@@ -60,12 +60,15 @@ const LoginForm = ({ onLogin }) => {
       console.log(data); // Verifica si el token está presente en la respuesta
 
       if (response.ok) {
-        const { token, nombreusuario } = data;
+        const { token, nombreusuario, id_cuenta } = data;
         console.log("Token almacenado:", token);
         console.log("Nombre de usuario almacenado:", nombreusuario);
+        console.log("ID de cuenta almacenado:", id_cuenta);
+
 
         localStorage.setItem("token", token);
         localStorage.setItem("username", nombreusuario);
+        localStorage.setItem("id_cuenta", id_cuenta);
         setTimeout(() => {
           localStorage.removeItem("token");
           console.log("Token eliminado después de 24 horas.");
