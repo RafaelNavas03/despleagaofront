@@ -1,38 +1,79 @@
 import React, { useContext, useState, useEffect  } from "react";
-import {Card, Form,Modal, Button, Row,
+import {Card, Form,Modal, Button, Row,ButtonGroup,
   Col} from 'react-bootstrap';
   import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCreditCard } from "@fortawesome/free-solid-svg-icons";
 import { CartContext } from "../context/CarritoContext";
+import { Radio } from 'antd';
 import PayPal from "./Paypal";
-
+import Map2 from "./Map2";
 
 const ShoppingCart = () => {
   const [cart, setCart] = useContext(CartContext);
   const [MostrarModal, setMostrarModal] = useState(false);
   const [userData, setUserData] = useState(null);
-  const [selectedLocation, setSelectedLocation] = useState("Casa");
+  const [selectedLocation, setSelectedLocation] = useState(null);
   const [showCardForm, setShowCardForm] = useState(false);
   
-  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
-  const [pagoCompletado, setPagoCompletado] = useState(false); // Nueva variable de estado
+  const [pagoCompletado, setPagoCompletado] = useState(false); 
+  const [modoPago, setModoPago] = useState(null); 
+  const [showElegirUbicacion, setShowElegirUbicacion] = useState(false);
 
- 
+  const [locationData, setLocationData] = useState({
+    latitud1: 0,
+    longitud1: 0,
+    latitud2: 0,
+    longitud2: 0,
+    latitud3: 0,
+    longitud3: 0,
+  });
+  useEffect(() => {
+    const nombreUsuario = localStorage.getItem('username');
+  
+    if (nombreUsuario) {
+      fetch(`http://127.0.0.1:8000/Login/obtener_usuario/${nombreUsuario}/`)
+        .then(response => response.json())
+        .then(data => {
+          setUserData(data.usuario);
+          
+          setLocationData({
+            latitud1: data.usuario?.ubicacion1?.latitud || 0,
+            longitud1: data.usuario?.ubicacion1?.longitud || 0,
+            latitud2: data.usuario?.ubicacion2?.latitud || 0,
+            longitud2: data.usuario?.ubicacion2?.longitud || 0,
+            latitud3: data.usuario?.ubicacion3?.latitud || 0,
+            longitud3: data.usuario?.ubicacion3?.longitud || 0,
+          });
+        })
+        .catch(error => console.error('Error al obtener datos del usuario:', error));
+    } else {
+      console.error('Nombre de usuario no encontrado en localStorage');
+    }
+  }, []);
 
-
-
+  const handleModoPagoChange = (e) => {
+    setModoPago(e.target.value);
+  };
 
 
   const handleLocationChange = (location) => {
     setSelectedLocation(location);
+    setShowElegirUbicacion(location === 'Otro');
+
+    setLocationData({
+      ...locationData,
+      latitud1: data.usuario?.ubicacion1?.latitud || 0,
+      longitud1: data.usuario?.ubicacion1?.longitud || 0,
+    });
   };
 
-  const handlePaymentMethodChange = (method) => {
-    setSelectedPaymentMethod(method);
-  };
 
   const handleShowCardForm = () => {
     setShowCardForm(true);
+  };
+  const handleElegirUbicacionClick = () => {
+
+    setShowElegirUbicacion(false);
   };
   const cerrarCardForm = () => {
     setShowCardForm(false);
@@ -43,11 +84,9 @@ const ShoppingCart = () => {
     }
   };
   const CerrarModalDespuesDePago = () => {
- 
     setMostrarModal(false);
     setShowCardForm(false);
-    setPagoCompletado(true); // Actualizar el estado después de un pago exitoso
-
+    setPagoCompletado(true); 
   };
   const CerrarModal = () => {
     setMostrarModal(false);
@@ -110,18 +149,54 @@ const ShoppingCart = () => {
       </Modal.Header>
       <Row>
         <Col>
-        <h5>Hola ✌🏻 </h5>
+          <h5>Hola ✌🏻 </h5>
           <span>Revisa tu dirección y forma de pago antes de comprar.</span>
+          <ButtonGroup style={{marginLeft:'10px',marginTop: '10px',width:'100%', 
+          marginBottom:'10px' }}>
+            <Button variant="outline-warning" 
+            onClick={() => handleLocationChange('Casa')}
+            style={{color:'rgb(255, 121, 32)'}}>Casa</Button>
+            <Button variant="outline-warning" 
+            onClick={() => handleLocationChange('Trabajo')}
+            style={{color:'rgb(255, 121, 32)'}}>Trabajo</Button>
+            <Button variant="outline-warning" 
+            onClick={() => handleLocationChange('Otro')}
+            style={{color:'rgb(255, 121, 32)'}}>Otro</Button>
+         </ButtonGroup>
           <div>Dirección de entrega: {selectedLocation}</div>
-
-  
-  <div style={{marginLeft:'10px',  marginTop:'10px' }}>
-    <PayPal onSuccess={CerrarModalDespuesDePago}/>
-  </div>
-</Col>
-<Col>
+          <div>Latitud: {locationData[`latitud${selectedLocation === 'Casa' ? 1 : selectedLocation === 'Trabajo' ? 2 : 3}`]}</div>
+          <div>Longitud: {locationData[`longitud${selectedLocation === 'Casa' ? 1 : selectedLocation === 'Trabajo' ? 2 : 3}`]}</div>
+            
+            <Modal show={showElegirUbicacion} onHide={() => setShowElegirUbicacion(false)} size="mg">
+              <Modal.Header closeButton style={{ borderBottom: 'none' }} />
+              <Modal.Body>
+                <Map2 onLocationSelect={handleLocationChange} />
+              </Modal.Body>
+            </Modal>
+          <div style={{ marginTop: '10px', fontSize: '18px' }}>Seleccione modo de pago:</div>
+          <Radio.Group onChange={handleModoPagoChange} value={modoPago}>
+            <Col style={{marginLeft:'10px'}}>
+              <Row>
+                <Radio value="T">Transferencia/Tarjeta</Radio>
+                {modoPago === 'T' && (
+                    <div style={{ marginLeft: '10px', marginTop: '10px' }}>
+                      <PayPal onSuccess={CerrarModalDespuesDePago} />
+                    </div>
+                  )}
+                <Radio value="E">Efectivo</Radio>
+                <Radio value="F">Fraccionado</Radio>
+                <Button style={{ marginLeft: '10px', marginTop: '10px', marginBottom:'10px' }} 
+                  disabled={modoPago !== 'E'}>
+                  Pagar: ${totalPrice}
+                </Button>
+              </Row>
+            </Col>
+          </Radio.Group>
+         
+        </Col>
+        <Col>
           <span>HOLA :D</span>
-  </Col>
+        </Col>
       </Row>
  
 

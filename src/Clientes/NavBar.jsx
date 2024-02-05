@@ -98,10 +98,7 @@ const NavBar =()=>{
                 Cerrar sesion
               </NavDropdown.Item>
             </NavDropdown>}
-          {Logeado && <Link style={{ textDecoration: 'none', color: 'inherit' }}
-          onClick={() => MostrarComponente('Reserva')}> <Nav.Link to="/Reserva">Reserva 
-          <span>{quantity}</span></Nav.Link></Link>}
-       
+          {Logeado &&<Nav.Link onClick={() => MostrarComponente('Reserva')}>Reserva</Nav.Link>}
           {Logeado && <Nav.Link>Puntos</Nav.Link>}
 
           {Logeado && <Link style={{ textDecoration: 'none', color: 'inherit' }}
