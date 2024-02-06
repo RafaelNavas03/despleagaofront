@@ -31,7 +31,7 @@ const CrearMesa = () => {
         throw new Error(Error en la solicitud: ${response.statusText});
       }
     } catch (error) {
-      console.error("Error al enviar la solicitud:", error.message);
+      throw new Error(`Error en la solicitud: ${response.statusText}`);
 
       // Mostrar mensaje de error
       message.error("Error al crear la mesa. Por favor, inténtalo de nuevo.");
