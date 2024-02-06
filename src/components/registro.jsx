@@ -241,7 +241,6 @@ const RegistroForm = () => {
                 <Option value="04">RUC</Option>
                 <Option value="05">Cédula</Option>
                 <Option value="06">Pasaporte</Option>
-                <Option value="07">Idt. del exterior</Option>
               </Select>
             </Form.Item>
 
