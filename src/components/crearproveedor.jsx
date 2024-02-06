@@ -15,8 +15,8 @@ const CrearProveedor = () => {
       const formData = new FormData();
       for (const key in values) {
         if (values[key] !== undefined && values[key] !== null) {
-            formData.append(key, values[key]);
-          }
+          formData.append(key, values[key]);
+        }
       }
   
       console.log('Valores a enviar:', formData); 
@@ -39,6 +39,15 @@ const CrearProveedor = () => {
       setLoading(false);
     }
   };  
+
+  const validatePhoneNumber = (_, value) => {
+    // Utiliza una expresión regular para validar si es un número de 10 dígitos
+    const phoneNumberRegex = /^\d{10}$/;
+    if (value && !phoneNumberRegex.test(value)) {
+      return Promise.reject('Ingrese un número de 10 dígitos válido');
+    }
+    return Promise.resolve();
+  };
 
   return (
     <Form
@@ -64,6 +73,10 @@ const CrearProveedor = () => {
       <Form.Item
         label="Teléfono"
         name="telefonoproveedor"
+        rules={[
+          { required: true, message: 'Por favor ingrese el teléfono' },
+          { validator: validatePhoneNumber },
+        ]}
       >
         <Input />
       </Form.Item>
