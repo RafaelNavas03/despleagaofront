@@ -13,7 +13,8 @@ const CrearMesa = () => {
         formData.append(key, values[key]);
       });
 
-      const response = await fetch('https://desplegaobak-production.up.railway.app/Mesas/crear/', {
+      const response = await fetch("http://127.0.0.1:8000/Mesas/crear/", {
+        method: "POST",
         body: formData,
       });
 
@@ -27,7 +28,7 @@ const CrearMesa = () => {
         // Limpiar el formulario
         form.resetFields();
       } else {
-        throw new Error(`Error en la solicitud: ${response.statusText}`);
+        throw new Error(Error en la solicitud: ${response.statusText});
       }
     } catch (error) {
       console.error("Error al enviar la solicitud:", error.message);
