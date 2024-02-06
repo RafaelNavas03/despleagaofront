@@ -28,12 +28,12 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
   const [clienteSeleccionado, setClienteSeleccionado] = useState(null);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/cliente/ver_clientes/")
+    fetch("https://desplegaobak-production.up.railway.app/cliente/ver_clientes/")
       .then((response) => response.json())
       .then((data) => setClientes(data.clientes))
       .catch((error) => console.error("Error fetching clientes:", error));
 
-    fetch("http://127.0.0.1:8000/producto/listar/")
+    fetch("https://desplegaobak-production.up.railway.app/producto/listar/")
       .then((response) => response.json())
       .then((data) => setProductos(data.productos))
       .catch((error) => console.error("Error fetching productos:", error));
@@ -217,7 +217,7 @@ const RealizarPedidoMesa = ({ visible, onClose, idMesa }) => {
       formData.append("detalles_pedido", JSON.stringify({ detalles_pedido }));
 
       const response = await fetch(
-        "http://127.0.0.1:8000/Mesero/tomar_pedido/",
+        "https://desplegaobak-production.up.railway.app/Mesero/tomar_pedido/",
         {
           method: "POST",
           body: formData,

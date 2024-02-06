@@ -19,7 +19,7 @@ const RealizarPedidoMesero = () => {
   const [MesaEnv, setMesaEnv] = useState("");
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000/Mesas/ver_mesas/")
+    fetch("https://desplegaobak-production.up.railway.app/Mesas/ver_mesas/")
       .then((response) => response.json())
       .then((data) => setMesas(data.mesas))
       .catch((error) => console.error("Error al obtener las mesas:", error));
